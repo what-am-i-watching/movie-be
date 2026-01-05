@@ -19,6 +19,8 @@ gem 'faraday'
 gem 'dotenv-rails'
 ```
 
+An API key for [The Movie Database](https://www.themoviedb.org/) is needed for this application. Get your [API key](https://developer.themoviedb.org/docs/getting-started) and add it into your .env file as `TMDB_API_KEY`.
+
 * Configuration
 
 * Database creation
@@ -113,5 +115,52 @@ In the body, add raw JSON with the data of an existing user:
             "jti": "16c6bd9b-7aad-4754-b928-78eaajilvf3gq4ber"
         }
     }
+}
+```
+
+# Searching for Movies
+
+## Search
+`GET: http://localhost:3000/movies/search?query=jurassic+park`
+
+Add your own search term
+
+### Example response:
+```
+{
+    "movies": [
+        {
+            "tmdb_id": 329,
+            "genre_ids": [
+                12,
+                878
+            ],
+            "title": "Jurassic Park",
+            "overview": "A wealthy entrepreneur secretly creates a theme park featuring living dinosaurs drawn from prehistoric DNA. Before opening day, he invites a team of experts and his two eager grandchildren to experience the park and help calm anxious investors. However, the park is anything but amusing as the security systems go off-line and the dinosaurs escape.",
+            "poster_path": "/bRKmwU9eXZI5dKT11Zx1KsayiLW.jpg",
+            "release_date": "1993-06-11",
+            "vote_average": 7.964,
+            "vote_count": 17347
+        },
+        {
+            "tmdb_id": 995456,
+            "genre_ids": [
+                99
+            ],
+            "title": "Jurassic Greatest Moments: Jurassic Park to Jurassic World",
+            "overview": "Join the cast of \"Jurassic World Dominion\" as they relive their favorite unforgettable, action-packed and epic moments from the \"Jurassic World\" franchise.",
+            "poster_path": "/tPdsrxdJBBIvJi5rwcnYGUoPAai.jpg",
+            "release_date": "2022-06-04",
+            "vote_average": 7.0,
+            "vote_count": 12
+        }
+    ]
+}
+```
+
+And if none match the search query
+```
+{
+    "movies": []
 }
 ```
