@@ -4,19 +4,25 @@ require 'json'
 class MovieService
     BASE_URL = "https://api.themoviedb.org/3"
     API_KEY = ENV["TMDB_API_KEY"]
+    CACHE_EXPIRY = 1.hour
 
     def self.search_movies(query)
-        url = "#{BASE_URL}/search/movie"
+        cache_key = "tmdb_search_#{query.parameterize}"
 
-        response = Faraday.get(url) do |req|
-            req.headers['Authorization'] = "Bearer #{API_KEY}"
-            req.params['query'] = query
-        end
+        Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY) do
+          url = "#{BASE_URL}/search/movie"
 
-        if response.success?
-            JSON.parse(response.body, symbolize_names: true)
-        else
-            { error: "API request failed", status: response.status}
+          response = Faraday.get(url) do |req|
+              req.headers['Authorization'] = "Bearer #{API_KEY}" 
+              req.params['query'] = query
+          end
+
+          if response.success?
+              JSON.parse(response.body, symbolize_names: true)
+          else
+              Rails.logger.error "TMDB API request failed with status: #{response.status}"
+              { error: "API request failed", status: response.status}
+          end
         end
     end
 end

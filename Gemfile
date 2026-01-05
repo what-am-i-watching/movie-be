@@ -45,6 +45,9 @@ gem "devise-jwt"
 # API requests
 gem "faraday"
 
+# Redis for caching
+gem 'redis-rails'
+
 gem 'jsonapi-serializer'
 
 group :development, :test do
