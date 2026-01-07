@@ -1,4 +1,4 @@
-class MoviesController < ApplicationController
+class Api::V1::MoviesController < Api::V1::BaseController
   def index
   end
 
@@ -13,14 +13,18 @@ class MoviesController < ApplicationController
       # Do we need pagination? Or maybe a limit sent to the api?
       serialized_movies = MovieSerializer.new(@movies, is_collection: true).serializable_hash
 
-      render json: { movies: serialized_movies[:data].map { |h| h[:attributes] } }, status: :ok
-
+      render_success(
+        data: { movies: serialized_movies[:data].map { |h| h[:attributes] } }
+      )
     else
-      render json: { movies: [] }, status: :ok
+      render_success(data: { movies: [] })
     end
   rescue StandardError => e
-    # TODO: Test error handling for the API call
     Rails.logger.error "MovieService API Error: #{e.message}"
-    render json: { error: "Failed to fetch movies", details: e.message }, status: :internal_server_error
+    render_error(
+      message: "Failed to fetch movies",
+      errors: [e.message],
+      status: :internal_server_error
+    )
   end
 end
