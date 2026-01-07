@@ -7,7 +7,7 @@ class Users::SessionsController < Devise::SessionsController
 
   private
 
-  def respond_with(resource, options={})
+  def respond_with(resource, options = {})
     render json: {
       status: 200,
       message: "User signed in successfully",
@@ -17,8 +17,8 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def respond_to_on_destroy
-    jwt_payload = JWT.decode(request.headers['Authorization'].split(' ')[1], ENV['DEVISE_JWT_SECRET_KEY']).first
-    current_user = User.find(jwt_payload['sub'])
+    jwt_payload = JWT.decode(request.headers["Authorization"].split(" ")[1], ENV["DEVISE_JWT_SECRET_KEY"]).first
+    current_user = User.find(jwt_payload["sub"])
     if current_user
       render json: {
         status: 200,

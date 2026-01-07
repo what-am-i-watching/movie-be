@@ -5,7 +5,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :validatable,
          :recoverable, :rememberable,
          :jwt_authenticatable, jwt_revocation_strategy: self
-  
+
   has_many :user_movies, dependent: :destroy
   has_many :movies, through: :user_movies
   has_many :friendships, dependent: :destroy

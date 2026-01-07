@@ -1,12 +1,12 @@
 Rails.application.routes.draw do
-  resources :movies, only: [:index, :show] do
+  resources :movies, only: [ :index, :show ] do
     collection do
       get :search
     end
   end
   devise_for :users, controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
+    sessions: "users/sessions",
+    registrations: "users/registrations"
   }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

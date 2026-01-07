@@ -1,5 +1,5 @@
-require 'faraday'
-require 'json'
+require "faraday"
+require "json"
 
 class MovieService
     BASE_URL = "https://api.themoviedb.org/3"
@@ -13,15 +13,15 @@ class MovieService
           url = "#{BASE_URL}/search/movie"
 
           response = Faraday.get(url) do |req|
-              req.headers['Authorization'] = "Bearer #{API_KEY}" 
-              req.params['query'] = query
+              req.headers["Authorization"] = "Bearer #{API_KEY}"
+              req.params["query"] = query
           end
 
           if response.success?
               JSON.parse(response.body, symbolize_names: true)
           else
               Rails.logger.error "TMDB API request failed with status: #{response.status}"
-              { error: "API request failed", status: response.status}
+              { error: "API request failed", status: response.status }
           end
         end
     end

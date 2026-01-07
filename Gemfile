@@ -46,9 +46,9 @@ gem "devise-jwt"
 gem "faraday"
 
 # Redis for caching
-gem 'redis-rails'
+gem "redis-rails"
 
-gem 'jsonapi-serializer'
+gem "jsonapi-serializer"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
