@@ -17,6 +17,8 @@ gem 'devise'
 gem 'devise-jwt'
 gem 'faraday'
 gem 'dotenv-rails'
+gem 'redis-rails'
+gem 'jsonapi-serializer'
 ```
 
 An API key for [The Movie Database](https://www.themoviedb.org/) is needed for this application. Get your [API key](https://developer.themoviedb.org/docs/getting-started) and add it into your .env file as `TMDB_API_KEY`.
