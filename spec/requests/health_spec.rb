@@ -12,7 +12,7 @@ RSpec.describe 'Health API', type: :request do
               properties: {
                 status: { type: :string }
               },
-              required: ['status']
+              required: [ 'status' ]
 
         run_test!
       end

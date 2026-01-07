@@ -6,8 +6,8 @@ module Api
       class RegistrationsController < Devise::RegistrationsController
         include Api::V1::ApiResponder
 
-        before_action :configure_sign_up_params, only: [:create]
-        before_action :configure_account_update_params, only: [:update]
+        before_action :configure_sign_up_params, only: [ :create ]
+        before_action :configure_account_update_params, only: [ :update ]
 
         private
 
@@ -63,7 +63,7 @@ module Api
 
         # Permit the parameters for user registration
         def configure_sign_up_params
-          devise_parameter_sanitizer.permit(:sign_up, keys: [:email, :password, :password_confirmation])
+          devise_parameter_sanitizer.permit(:sign_up, keys: [ :email, :password, :password_confirmation ])
         end
 
         # Override sign_up_params to ensure proper parameter handling for API
@@ -73,7 +73,7 @@ module Api
 
         # Permit the parameters for account updates
         def configure_account_update_params
-          devise_parameter_sanitizer.permit(:account_update, keys: [:email, :password, :password_confirmation, :current_password])
+          devise_parameter_sanitizer.permit(:account_update, keys: [ :email, :password, :password_confirmation, :current_password ])
         end
 
         # The path used after sign up.

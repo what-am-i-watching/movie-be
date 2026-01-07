@@ -23,7 +23,7 @@ class Api::V1::MoviesController < Api::V1::BaseController
     Rails.logger.error "MovieService API Error: #{e.message}"
     render_error(
       message: "Failed to fetch movies",
-      errors: [e.message],
+      errors: [ e.message ],
       status: :internal_server_error
     )
   end

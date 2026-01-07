@@ -13,14 +13,14 @@ module Api
           sign_in(resource_name, resource)
           yield resource if block_given?
           respond_with resource, location: after_sign_in_path_for(resource)
-        # rescue Warden::NotAuthenticated
-        #   # Catch authentication failure and handle it explicitly
-        #   # This prevents Devise's failure app from being used
-        #   respond_to_on_failure
-        # rescue => e
-        #   # Catch any other exceptions and handle them
-        #   Rails.logger.error "Sign in error: #{e.class} - #{e.message}"
-        #   respond_to_on_failure
+          # rescue Warden::NotAuthenticated
+          #   # Catch authentication failure and handle it explicitly
+          #   # This prevents Devise's failure app from being used
+          #   respond_to_on_failure
+          # rescue => e
+          #   # Catch any other exceptions and handle them
+          #   Rails.logger.error "Sign in error: #{e.class} - #{e.message}"
+          #   respond_to_on_failure
         end
 
         private

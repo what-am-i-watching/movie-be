@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
-  mount Rswag::Ui::Engine => '/api-docs'
-  mount Rswag::Api::Engine => '/api-docs'
+  mount Rswag::Ui::Engine => "/api-docs"
+  mount Rswag::Api::Engine => "/api-docs"
 
   namespace :api do
     namespace :v1 do
-      get 'health', to: 'health#show'
+      get "health", to: "health#show"
 
       resources :movies, only: [ :index, :show ] do
         collection do
@@ -12,10 +12,10 @@ Rails.application.routes.draw do
         end
       end
       devise_for :users,
-        path: 'users',
+        path: "users",
         controllers: {
-          sessions: 'api/v1/users/sessions',
-          registrations: 'api/v1/users/registrations'
+          sessions: "api/v1/users/sessions",
+          registrations: "api/v1/users/registrations"
         },
         defaults: { format: :json }
       # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

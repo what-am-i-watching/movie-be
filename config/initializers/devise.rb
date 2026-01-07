@@ -16,8 +16,8 @@ Devise.setup do |config|
   # by default. You can change it below and use your own secret key.
   # config.secret_key = 'd60e1db21dabf8a92084929bf4e4dbe33d8831a0612155e032053d110a299a66f4e76c80ef7df198657da2af72aedf8fbf6193e8540612dd9df2b76e6dafb276'
 
-  Devise.parent_controller = 'Api::V1::BaseController'
-  
+  Devise.parent_controller = "Api::V1::BaseController"
+
   config.jwt do |jwt|
     jwt.secret = ENV["DEVISE_JWT_SECRET_KEY"]
 
@@ -115,7 +115,7 @@ Devise.setup do |config|
   # passing skip: :sessions to `devise_for` in your config/routes.rb
   # Skip session storage for all strategies (API-only app doesn't need sessions)
   # config.skip_session_storage = [:http_auth]
-  config.skip_session_storage = [:http_auth, :params_auth, :database_auth, :jwt_auth]
+  config.skip_session_storage = [ :http_auth, :params_auth, :database_auth, :jwt_auth ]
 
   # By default, Devise cleans up the CSRF token on authentication to
   # avoid CSRF token fixation attacks. This means that, when using AJAX
