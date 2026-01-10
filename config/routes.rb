@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
-  resources :movies, only: [ :index, :show ] do
+  resources :movies, only: [ :index, :show, :create ] do
     collection do
       get :search
     end
   end
+  resources :user_movies
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"

@@ -35,5 +35,21 @@ class MovieSerializer
     movie[:vote_count] || movie["vote_count"]
   end
 
+  attribute :watched do |movie|
+    movie[:watched] || movie["watched"]
+  end
+
+  attribute :rating do |movie|
+    movie[:rating] || movie["rating"]
+  end
+
+  attribute :notes do |movie|
+    movie[:notes] || movie["notes"]
+  end
+
+  attribute :in_list do |movie|
+    movie[:in_list] || movie["in_list"]
+  end
+
   set_type :movie
 end
