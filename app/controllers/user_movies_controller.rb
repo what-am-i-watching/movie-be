@@ -2,9 +2,9 @@ class UserMoviesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @user_movies = current_user.user_movies || []
+    user_movies = current_user.user_movies.includes(:movie) || []
 
-    render json: { user_movies: @user_movies }, status: :ok
+    render json: { user_movies: user_movies.as_json(include: :movie) }, status: :ok
   end
 
   def create
