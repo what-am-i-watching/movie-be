@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_10_190449) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_15_233520) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_10_190449) do
     t.integer "tmdb_id"
     t.datetime "updated_at", null: false
     t.index ["tmdb_id"], name: "index_movies_on_tmdb_id", unique: true
+  end
+
+  create_table "solid_cache_entries", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.binary "key", null: false
+    t.binary "value", null: false
+    t.index ["key", "created_at"], name: "index_solid_cache_entries_on_key_and_created_at"
+    t.index ["key"], name: "index_solid_cache_entries_on_key", unique: true
   end
 
   create_table "user_movies", force: :cascade do |t|
