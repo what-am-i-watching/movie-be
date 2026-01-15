@@ -12,8 +12,8 @@ Rails.application.configure do
   # Full error reports are disabled.
   config.consider_all_requests_local = false
 
-  # Use Redis for caching
-  config.cache_store = :redis_cache_store, { url: ENV["REDIS_URL"] }
+  # Use Solid Cache for caching
+  config.cache_store = :solid_cache_store
 
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
