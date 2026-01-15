@@ -5,6 +5,9 @@ Rails.application.routes.draw do
     end
   end
   resources :user_movies
+  devise_scope :user do
+    get "/me", to: "users/sessions#show"
+  end
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"

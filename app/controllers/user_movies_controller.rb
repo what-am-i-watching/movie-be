@@ -9,7 +9,7 @@ class UserMoviesController < ApplicationController
 
   def create
     if
-      @user_movie = current_user.user_movies.find_by({movie_id: user_movie_params["movie_id"], user_id: current_user["id"]})
+      @user_movie = current_user.user_movies.find_by({ movie_id: user_movie_params["movie_id"], user_id: current_user["id"] })
       @user_movie.update(user_movie_params)
       # NOTE: since we show by create date, the user watched order is off
     else
@@ -25,7 +25,7 @@ class UserMoviesController < ApplicationController
   end
 
   def destroy
-    user_movie = UserMovie.find(params['id'])
+    user_movie = UserMovie.find(params["id"])
     user_movie.destroy
   end
 

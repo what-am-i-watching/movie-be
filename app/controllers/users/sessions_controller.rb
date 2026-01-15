@@ -2,8 +2,19 @@
 
 class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
+  before_action :authenticate_user!, only: [ :show ]
 
   respond_to :json
+
+  def show
+    if current_user
+      render json: UserSerializer.new(current_user), status: :ok
+    else
+      render json: {
+        error: "You need to sign in or sign up before continuing."
+      }, status: :unauthorized
+    end
+  end
 
   private
 
