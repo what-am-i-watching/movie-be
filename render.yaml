@@ -1,0 +1,22 @@
+services:
+  - type: web
+    plan: free
+    name: movies-api
+    runtime: ruby
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: movies_db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false # You will set this manually in the dashboard
+      - key: NODE_VERSION
+        value: 20.x # Rails 8 sometimes needs node for JS processing even in APIs
+
+databases:
+  - name: movies_db
+    plan: free
+    databaseName: movies_production
+    user: movies_user
