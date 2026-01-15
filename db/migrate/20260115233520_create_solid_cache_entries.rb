@@ -6,7 +6,7 @@ class CreateSolidCacheEntries < ActiveRecord::Migration[8.1]
       t.datetime :created_at, null: false
 
       t.index :key, unique: true, length: 1024
-      t.index [:key, :created_at] # Optimization for cache cleanup
+      t.index [ :key, :created_at ] # Optimization for cache cleanup
     end
   end
 end
