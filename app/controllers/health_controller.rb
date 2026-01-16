@@ -4,7 +4,7 @@ class HealthController < ApplicationController
   def check
     # This will tell us exactly which tables exist in the production DB
     tables = ActiveRecord::Base.connection.tables
-    
+
     render json: {
       status: "online",
       database_connected: ActiveRecord::Base.connection.active?,
