@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_16_003009) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_16_004131) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -37,7 +37,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_003009) do
     t.integer "byte_size", null: false
     t.datetime "created_at", null: false
     t.binary "key", null: false
-    t.integer "key_hash", null: false
+    t.bigint "key_hash", null: false
     t.binary "value", null: false
     t.index ["key", "created_at"], name: "index_solid_cache_entries_on_key_and_created_at"
     t.index ["key"], name: "index_solid_cache_entries_on_key", unique: true
