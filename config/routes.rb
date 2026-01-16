@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resources :user_movies
   devise_scope :user do
     get "/me", to: "users/sessions#show"
+    get "/health", to: "health#check"
   end
   devise_for :users, controllers: {
     sessions: "users/sessions",
