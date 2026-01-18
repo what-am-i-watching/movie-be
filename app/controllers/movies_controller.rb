@@ -22,10 +22,17 @@ class MoviesController < ApplicationController
 
   def search
     if params[:query].present?
-      @search_results = MovieService.search_movies(params[:query])
-      @movies = @search_results[:results] || []
+      @movie_results = MovieService.search_movies(params[:query])
+      @movies = @movie_results[:results] || []
 
-      @movies.each do |movie|
+      @show_results = ShowsService.search_shows(params[:query])
+      @shows = @show_results[:results] || []
+
+      @all_results = (@movies + @shows).sort_by { |item| -item[:popularity] }
+
+      # TODO: specify is movie or show, add column to db??
+
+      @all_results.each do |movie|
         @db_movie = Movie.find_by(tmdb_id: movie[:id])
         if @db_movie
           @user_movie = current_user.user_movies.find_by(movie_id: @db_movie.id)
@@ -38,12 +45,13 @@ class MoviesController < ApplicationController
             movie[:in_list] = false
           end
         else
-            movie[:in_list] = false
+          movie[:in_list] = false
         end
+        movie[:is_movie] = movie.key?(:original_title)
       end
 
       # Do we need pagination? Or maybe a limit sent to the api?
-      serialized_movies = MovieSerializer.new(@movies, is_collection: true).serializable_hash
+      serialized_movies = MovieSerializer.new(@all_results, is_collection: true).serializable_hash
 
       # Send over array tmdb_id's to Grant's service for ranking
 

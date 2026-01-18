@@ -12,7 +12,11 @@ class MovieSerializer
   end
 
   attribute :title do |movie|
-    movie[:original_title] || movie["original_title"]
+    movie[:original_title] || movie["original_title"] || movie[:name] || movie["name"]
+  end
+
+  attribute :is_movie do |movie|
+    movie[:is_movie] || movie["is_movie"]
   end
 
   attribute :overview do |movie|
@@ -24,7 +28,7 @@ class MovieSerializer
   end
 
   attribute :release_date do |movie|
-    movie[:release_date] || movie["release_date"]
+    movie[:release_date] || movie["release_date"] || movie[:first_air_date] || movie["first_air_date"]
   end
 
   attribute :vote_average do |movie|
