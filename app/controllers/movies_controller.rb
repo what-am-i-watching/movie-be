@@ -30,8 +30,6 @@ class MoviesController < ApplicationController
 
       @all_results = (@movies + @shows).sort_by { |item| -item[:popularity] }
 
-      # TODO: specify is movie or show, add column to db??
-
       @all_results.each do |movie|
         @db_movie = Movie.find_by(tmdb_id: movie[:id])
         if @db_movie
@@ -65,6 +63,26 @@ class MoviesController < ApplicationController
     # TODO: Test error handling for the API call
     Rails.logger.error "MovieService API Error: #{e.message}"
     render json: { error: "Failed to fetch movies", details: e.message }, status: :internal_server_error
+  end
+
+  def popular
+    @movie_results = MovieService.popular_movies()
+    @movies = @movie_results[:results] || []
+    @movies.each do |movie|
+      @db_movie = Movie.find_by(tmdb_id: movie[:id])
+      if @db_movie
+        @user_movie = current_user.user_movies.find_by(movie_id: @db_movie.id)
+        if @user_movie
+          movie[:in_list] = true
+          movie[:status] = @user_movie.status
+          movie[:rating] = @user_movie.rating
+          movie[:notes] = @user_movie.notes
+          movie[:progress_notes] = @user_movie.progress_notes
+        end
+      end
+    end
+    serialized_movies = MovieSerializer.new(@movies, is_collection: true).serializable_hash
+    render json: { movies: serialized_movies[:data].map { |h| h[:attributes] } }, status: :ok
   end
 
   private

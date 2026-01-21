@@ -25,4 +25,23 @@ class MovieService
           end
         end
     end
+
+    def self.popular_movies
+      cache_key = "tmdb_movies_popular"
+
+      Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY) do
+        url = "#{BASE_URL}/movie/popular"
+
+        response = Faraday.get(url) do |req|
+            req.headers["Authorization"] = "Bearer #{API_KEY}"
+        end
+
+        if response.success?
+            JSON.parse(response.body, symbolize_names: true)
+        else
+            Rails.logger.error "TMDB API request failed with status: #{response.status}"
+            { error: "API request failed", status: response.status }
+        end
+      end
+  end
 end

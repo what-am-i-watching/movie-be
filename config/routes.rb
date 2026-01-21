@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resources :movies, only: [ :index, :show, :create ] do
     collection do
       get :search
+      get :popular
     end
   end
   resources :user_movies
