@@ -38,9 +38,10 @@ class MoviesController < ApplicationController
           @user_movie = current_user.user_movies.find_by(movie_id: @db_movie.id)
           if @user_movie
             movie[:in_list] = true
-            movie[:watched] = @user_movie.watched
+            movie[:status] = @user_movie.status
             movie[:rating] = @user_movie.rating
             movie[:notes] = @user_movie.notes
+            movie[:progress_notes] = @user_movie.progress_notes
           else
             movie[:in_list] = false
           end
