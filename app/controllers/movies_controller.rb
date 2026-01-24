@@ -6,17 +6,26 @@ class MoviesController < ApplicationController
 
   def show
     @movie = Movie.find(params[:id])
+    @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
 
-    render json: @movie, status: :ok
+    render json: { movie: @enriched_movie }, status: :ok
   end
 
   def create
-    @movie = Movie.find_or_create_by(movie_params)
+    @movie = Movie.find_by(tmdb_id: movie_params[:tmdb_id])
 
-    if @movie.save
-      render json: @movie, status: :created, location: @movie
+    if @movie
+      @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
+      render json: { movie: @enriched_movie }, status: :ok
     else
-      render json: @movie.errors, status: :unprocessable_entity
+      @movie = Movie.create(movie_params)
+
+      if @movie.persisted?
+        @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
+        render json: { movie: @enriched_movie }, status: :created
+      else
+        render json: @movie.errors, status: :unprocessable_entity
+      end
     end
   end
 
@@ -30,31 +39,10 @@ class MoviesController < ApplicationController
 
       @all_results = (@movies + @shows).sort_by { |item| -item[:popularity] }
 
-      @all_results.each do |movie|
-        @db_movie = Movie.find_by(tmdb_id: movie[:id])
-        if @db_movie
-          @user_movie = current_user.user_movies.find_by(movie_id: @db_movie.id)
-          if @user_movie
-            movie[:in_list] = true
-            movie[:status] = @user_movie.status
-            movie[:rating] = @user_movie.rating
-            movie[:notes] = @user_movie.notes
-            movie[:progress_notes] = @user_movie.progress_notes
-          else
-            movie[:in_list] = false
-          end
-        else
-          movie[:in_list] = false
-        end
-        movie[:is_movie] = movie.key?(:original_title)
-      end
+      @enriched_results = MovieDataEnricher.enrich_collection(@all_results, current_user)
 
       # Do we need pagination? Or maybe a limit sent to the api?
-      serialized_movies = MovieSerializer.new(@all_results, is_collection: true).serializable_hash
-
-      # Send over array tmdb_id's to Grant's service for ranking
-
-      render json: { movies: serialized_movies[:data].map { |h| h[:attributes] } }, status: :ok
+      render json: { movies: @enriched_results }, status: :ok
 
     else
       render json: { movies: [] }, status: :ok
@@ -68,26 +56,41 @@ class MoviesController < ApplicationController
   def popular
     @movie_results = MovieService.popular_movies()
     @movies = @movie_results[:results] || []
-    @movies.each do |movie|
-      @db_movie = Movie.find_by(tmdb_id: movie[:id])
-      if @db_movie
-        @user_movie = current_user.user_movies.find_by(movie_id: @db_movie.id)
-        if @user_movie
-          movie[:in_list] = true
-          movie[:status] = @user_movie.status
-          movie[:rating] = @user_movie.rating
-          movie[:notes] = @user_movie.notes
-          movie[:progress_notes] = @user_movie.progress_notes
-        end
+
+    @enriched_movies = MovieDataEnricher.enrich_collection(@movies, current_user)
+
+    render json: { movies: @enriched_movies }, status: :ok
+  end
+
+  def details
+    if params[:tmdb_id].present?
+      # debugger
+      is_movie = params[:is_movie] != "false"
+      @movie_data = MovieService.movie_details(params[:tmdb_id], is_movie: is_movie)
+
+      if @movie_data[:error]
+        render json: { error: @movie_data[:error] }, status: :unprocessable_entity
+        return
       end
+
+      @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie_data, current_user)
+
+      unless @enriched_movie.key?(:is_movie)
+        @enriched_movie[:is_movie] = @enriched_movie.key?(:original_title) || is_movie
+      end
+
+      render json: { movie: @enriched_movie }, status: :ok
+    else
+      render json: { error: "tmdb_id parameter is required" }, status: :bad_request
     end
-    serialized_movies = MovieSerializer.new(@movies, is_collection: true).serializable_hash
-    render json: { movies: serialized_movies[:data].map { |h| h[:attributes] } }, status: :ok
+  rescue StandardError => e
+    Rails.logger.error "MovieService API Error: #{e.message}"
+    render json: { error: "Failed to fetch movie details", details: e.message }, status: :internal_server_error
   end
 
   private
 
   def movie_params
-    params.expect(movie: [ :title, :tmdb_id, :release_year, :poster_url ])
+    params.expect(movie: [ :title, :tmdb_id, :release_year, :poster_url, :is_movie ])
   end
 end

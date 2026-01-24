@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     collection do
       get :search
       get :popular
+      get "details/:tmdb_id", to: "movies#details"
     end
   end
   resources :user_movies

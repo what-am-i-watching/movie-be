@@ -16,7 +16,7 @@ class MovieSerializer
   end
 
   attribute :is_movie do |movie|
-    movie[:is_movie] || movie["is_movie"]
+    movie.key?(:is_movie) ? movie[:is_movie] : movie["is_movie"]
   end
 
   attribute :overview do |movie|
@@ -56,7 +56,7 @@ class MovieSerializer
   end
 
   attribute :in_list do |movie|
-    movie[:in_list] || movie["in_list"]
+    movie.key?(:in_list) ? movie[:in_list] : movie["in_list"]
   end
 
   set_type :movie
