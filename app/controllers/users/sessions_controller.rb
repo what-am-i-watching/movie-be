@@ -28,7 +28,7 @@ class Users::SessionsController < Devise::SessionsController
 
   def respond_to_on_destroy
     token = request.headers["Authorization"]&.split(" ")&.last
-    
+
     if token.blank?
       render json: {
         status: 401,
@@ -44,7 +44,7 @@ class Users::SessionsController < Devise::SessionsController
         true,
         { verify_expiration: false }
       ).first
-      
+
       current_user = User.find_by(id: jwt_payload["sub"])
       if current_user
         render json: {

@@ -3,9 +3,9 @@ class Users::PasswordsController < Devise::PasswordsController
 
   def create
     self.resource = resource_class.send_reset_password_instructions(resource_params)
-    
+
     if successfully_sent?(resource)
-      render json: { message: 'Password reset instructions sent to your email' }, status: :ok
+      render json: { message: "Password reset instructions sent to your email" }, status: :ok
     else
       render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
     end
@@ -16,7 +16,7 @@ class Users::PasswordsController < Devise::PasswordsController
 
     if resource.errors.empty?
       resource.unlock_access! if unlockable?(resource)
-      render json: { message: 'Password successfully reset' }, status: :ok
+      render json: { message: "Password successfully reset" }, status: :ok
     else
       render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
     end
