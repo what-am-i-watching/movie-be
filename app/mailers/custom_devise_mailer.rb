@@ -1,4 +1,7 @@
 class CustomDeviseMailer < Devise::Mailer
+  layout "mailer"
+  default template_path: "devise/mailer"
+
   def reset_password_instructions(record, token, opts = {})
     if Rails.env === "development"
       @reset_url = "http://localhost:5173/reset-password?token=#{token}"
