@@ -51,15 +51,26 @@ RSpec.describe 'Users::Sessions', type: :request do
             data: {
               type: :object,
               properties: {
-                id: { type: :integer },
-                email: { type: :string, format: :email },
-                created_at: { type: :string, format: :date_time },
-                updated_at: { type: :string, format: :date_time },
-                jti: { type: :string }
+                id: { type: :integer, example: 1 },
+                email: { type: :string, format: :email, example: 'user@example.com' },
+                created_at: { type: :string, format: :date_time, example: '2024-01-01T00:00:00.000Z' },
+                updated_at: { type: :string, format: :date_time, example: '2024-01-01T00:00:00.000Z' },
+                jti: { type: :string, example: 'abc123def456' }
               }
             }
           },
-          required: [ 'status', 'message', 'data' ]
+          required: [ 'status', 'message', 'data' ],
+          example: {
+            status: 200,
+            message: 'User signed in successfully',
+            data: {
+              id: 1,
+              email: 'user@example.com',
+              created_at: '2024-01-01T00:00:00.000Z',
+              updated_at: '2024-01-01T00:00:00.000Z',
+              jti: 'abc123def456'
+            }
+          }
 
         let(:Authorization) { nil }
         let!(:sign_in_user) { create_test_user(email: 'signin@example.com') }
@@ -157,13 +168,23 @@ RSpec.describe 'Users::Sessions', type: :request do
                   type: :object,
                   properties: {
                     email: { type: :string, format: :email, example: 'user@example.com' },
-                    created_at: { type: :string, format: :date_time }
+                    created_at: { type: :string, format: :date_time, example: '2024-01-01T00:00:00.000Z' }
                   }
                 }
               }
             }
           },
-          required: [ 'data' ]
+          required: [ 'data' ],
+          example: {
+            data: {
+              id: '1',
+              type: 'user',
+              attributes: {
+                email: 'user@example.com',
+                created_at: '2024-01-01T00:00:00.000Z'
+              }
+            }
+          }
 
         let(:Authorization) do
           # Create a user and sign in to get a valid token

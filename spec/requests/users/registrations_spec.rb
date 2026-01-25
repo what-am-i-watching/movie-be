@@ -51,15 +51,26 @@ RSpec.describe 'Users::Registrations', type: :request do
             data: {
               type: :object,
               properties: {
-                id: { type: :integer },
-                email: { type: :string, format: :email },
-                created_at: { type: :string, format: :date_time },
-                updated_at: { type: :string, format: :date_time },
-                jti: { type: :string }
+                id: { type: :integer, example: 1 },
+                email: { type: :string, format: :email, example: 'user@example.com' },
+                created_at: { type: :string, format: :date_time, example: '2024-01-01T00:00:00.000Z' },
+                updated_at: { type: :string, format: :date_time, example: '2024-01-01T00:00:00.000Z' },
+                jti: { type: :string, example: 'abc123def456' }
               }
             }
           },
-          required: [ 'status', 'message', 'data' ]
+          required: [ 'status', 'message', 'data' ],
+          example: {
+            status: 200,
+            message: 'Signed up successfully',
+            data: {
+              id: 1,
+              email: 'user@example.com',
+              created_at: '2024-01-01T00:00:00.000Z',
+              updated_at: '2024-01-01T00:00:00.000Z',
+              jti: 'abc123def456'
+            }
+          }
 
         # Provide empty Authorization to satisfy rswag's security header resolution
         let(:Authorization) { nil }

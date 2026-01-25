@@ -1862,21 +1862,35 @@ paths:
                     properties:
                       id:
                         type: integer
+                        example: 1
                       email:
                         type: string
                         format: email
+                        example: user@example.com
                       created_at:
                         type: string
                         format: date_time
+                        example: '2024-01-01T00:00:00.000Z'
                       updated_at:
                         type: string
                         format: date_time
+                        example: '2024-01-01T00:00:00.000Z'
                       jti:
                         type: string
+                        example: abc123def456
                 required:
                 - status
                 - message
                 - data
+                example:
+                  status: 200
+                  message: Signed up successfully
+                  data:
+                    id: 1
+                    email: user@example.com
+                    created_at: '2024-01-01T00:00:00.000Z'
+                    updated_at: '2024-01-01T00:00:00.000Z'
+                    jti: abc123def456
         '422':
           description: Validation errors
           content:
@@ -1955,21 +1969,35 @@ paths:
                     properties:
                       id:
                         type: integer
+                        example: 1
                       email:
                         type: string
                         format: email
+                        example: user@example.com
                       created_at:
                         type: string
                         format: date_time
+                        example: '2024-01-01T00:00:00.000Z'
                       updated_at:
                         type: string
                         format: date_time
+                        example: '2024-01-01T00:00:00.000Z'
                       jti:
                         type: string
+                        example: abc123def456
                 required:
                 - status
                 - message
                 - data
+                example:
+                  status: 200
+                  message: User signed in successfully
+                  data:
+                    id: 1
+                    email: user@example.com
+                    created_at: '2024-01-01T00:00:00.000Z'
+                    updated_at: '2024-01-01T00:00:00.000Z'
+                    jti: abc123def456
         '401':
           description: Invalid credentials
           content:
@@ -2047,8 +2075,16 @@ paths:
                           created_at:
                             type: string
                             format: date_time
+                            example: '2024-01-01T00:00:00.000Z'
                 required:
                 - data
+                example:
+                  data:
+                    id: '1'
+                    type: user
+                    attributes:
+                      email: user@example.com
+                      created_at: '2024-01-01T00:00:00.000Z'
         '401':
           description: Unauthorized
           content:
