@@ -235,4 +235,52 @@ RSpec.describe 'Users::Sessions', type: :request do
       end
     end
   end
+
+  path '/users/sign_out' do
+    delete 'Sign out' do
+      tags 'Authentication'
+      produces 'application/json'
+      description 'Sign out the current user. Invalidates the JWT token. Works even if token is expired.'
+      security [ bearerAuth: [] ]
+
+      response '200', 'Signed out successfully' do
+        schema type: :object,
+          properties: {
+            status: { type: :integer, example: 200 },
+            message: { type: :string, example: 'Signed out successfully' }
+          },
+          required: [ 'status', 'message' ]
+
+        let(:Authorization) do
+          user = create_test_user(email: 'signout@example.com')
+          post '/users/sign_in', params: { user: { email: user.email, password: 'password123' } }
+          response.headers['Authorization']
+        end
+
+        run_test! do
+          data = JSON.parse(response.body)
+          expect(data['status']).to eq(200)
+          expect(data['message']).to eq('Signed out successfully')
+        end
+      end
+
+      response '401', 'No token provided' do
+        schema type: :object,
+          properties: {
+            status: { type: :integer, example: 401 },
+            message: { type: :string, example: 'No token provided' }
+          },
+          required: [ 'status', 'message' ]
+
+        let(:Authorization) { nil }
+
+        run_test! do
+          data = JSON.parse(response.body)
+          expect(response).to have_http_status(:unauthorized)
+          expect(data['status']).to eq(401)
+          expect(data['message']).to eq('No token provided')
+        end
+      end
+    end
+  end
 end
