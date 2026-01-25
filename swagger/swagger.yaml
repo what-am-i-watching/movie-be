@@ -1664,6 +1664,50 @@ paths:
                     example: You need to sign in or sign up before continuing.
                 required:
                 - error
+  "/user_movies/{id}":
+    delete:
+      summary: Delete a user movie
+      tags:
+      - User Movies
+      description: Remove a movie or TV show from the user's list by deleting the
+        user_movie association.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User movie association ID
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: User movie deleted successfully
+        '404':
+          description: User movie not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User movie not found
+                required:
+                - error
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
   "/users/password":
     post:
       summary: Request password reset
