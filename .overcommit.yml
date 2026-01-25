@@ -19,6 +19,9 @@ PreCommit:
  RuboCop:
    enabled: true
    on_warn: fail # Treat all warnings as failures
+ RSpec:
+   enabled: true
+   command: ['bundle', 'exec', 'rspec']
 #
 #  TrailingWhitespace:
 #    enabled: true
