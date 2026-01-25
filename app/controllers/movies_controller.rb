@@ -18,15 +18,20 @@ class MoviesController < ApplicationController
       @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
       render json: { movie: @enriched_movie }, status: :ok
     else
-      @movie = Movie.create(movie_params)
+      @movie = Movie.new(movie_params)
 
-      if @movie.persisted?
+      if @movie.save
         @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
         render json: { movie: @enriched_movie }, status: :created
       else
-        render json: @movie.errors, status: :unprocessable_entity
+        render json: { errors: @movie.errors.full_messages }, status: :unprocessable_entity
       end
     end
+  rescue ActiveRecord::RecordNotUnique
+    # Handle race condition: another request created the movie between find_by and create
+    @movie = Movie.find_by(tmdb_id: movie_params[:tmdb_id])
+    @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
+    render json: { movie: @enriched_movie }, status: :ok
   end
 
   def search
@@ -95,6 +100,6 @@ class MoviesController < ApplicationController
   private
 
   def movie_params
-    params.expect(movie: [ :title, :tmdb_id, :release_year, :poster_url, :is_movie ])
+    params.expect(movie: [ :title, :tmdb_id, :release_date, :poster_url, :is_movie ])
   end
 end
