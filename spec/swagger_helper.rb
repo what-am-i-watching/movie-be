@@ -15,21 +15,47 @@ RSpec.configure do |config|
   # document below. You can override this behavior by adding a openapi_spec tag to the
   # the root example_group in your specs, e.g. describe '...', openapi_spec: 'v2/swagger.json'
   config.openapi_specs = {
-    'v1/swagger.yaml' => {
+    'swagger.yaml' => {
       openapi: '3.0.1',
       info: {
-        title: 'API V1',
-        version: 'v1'
+        title: 'What Am I Watching? API',
+        version: '1.0.0',
+        description: 'API for managing movies and TV shows watchlists',
+        contact: {
+          email: 'whatamiwatching.info@gmail.com'
+        }
       },
       paths: {},
       servers: [
         {
-          url: 'https://{defaultHost}',
-          variables: {
-            defaultHost: {
-              default: 'www.example.com'
-            }
+          url: 'http://localhost:3000',
+          description: 'Development server'
+        },
+        {
+          url: 'https://whatamiwatching.info',
+          description: 'Production server'
+        }
+      ],
+      tags: [
+        { name: 'Authentication', description: 'User authentication endpoints' },
+        { name: 'Movies', description: 'Movie and TV show endpoints' },
+        { name: 'User Movies', description: 'User movie list management' },
+        { name: 'Health', description: 'Health check endpoints' }
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: :http,
+            scheme: :bearer,
+            bearerFormat: 'JWT',
+            description: 'JWT token obtained from POST /users/sign_in endpoint. Include the token in the Authorization header as: Bearer {token}'
           }
+        },
+        schemas: {}
+      },
+      security: [
+        {
+          bearerAuth: []
         }
       ]
     }
