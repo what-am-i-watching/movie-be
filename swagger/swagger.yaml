@@ -7,6 +7,132 @@ info:
   contact:
     email: whatamiwatching.info@gmail.com
 paths:
+  "/users/password":
+    post:
+      summary: Request password reset
+      tags:
+      - Authentication
+      description: Request password reset instructions. Sends an email with reset
+        link to the user.
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: Password reset instructions sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset instructions sent to your email
+                required:
+                - message
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Email not found
+                required:
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                      description: User email address
+                  required:
+                  - email
+              required:
+              - user
+        required: true
+    patch:
+      summary: Reset password with token
+      tags:
+      - Authentication
+      description: Reset password using the token from the reset email. Token is included
+        in the reset link sent via email.
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: Password successfully reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password successfully reset
+                required:
+                - message
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Reset password token is invalid
+                    - Password is too short (minimum is 6 characters)
+                    - Password confirmation doesn't match Password
+                required:
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    reset_password_token:
+                      type: string
+                      example: abc123def456
+                      description: Token from password reset email link
+                    password:
+                      type: string
+                      format: password
+                      example: newpassword123
+                      description: New password
+                      minLength: 6
+                    password_confirmation:
+                      type: string
+                      format: password
+                      example: newpassword123
+                      description: Password confirmation (must match password)
+                      minLength: 6
+                  required:
+                  - reset_password_token
+                  - password
+                  - password_confirmation
+              required:
+              - user
+        required: true
   "/users":
     post:
       summary: Create a new user account
@@ -235,6 +361,48 @@ paths:
                     description: Error message when authentication fails
                 required:
                 - error
+  "/users/sign_out":
+    delete:
+      summary: Sign out
+      tags:
+      - Authentication
+      description: Sign out the current user. Invalidates the JWT token. Works even
+        if token is expired.
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Signed out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Signed out successfully
+                required:
+                - status
+                - message
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: No token provided
+                required:
+                - status
+                - message
 servers:
 - url: http://localhost:3000
   description: Development server
