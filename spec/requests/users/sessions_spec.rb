@@ -138,99 +138,100 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  describe 'GET /me' do
-    let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+  path '/me' do
+    get 'Get current user' do
+      tags 'Authentication'
+      produces 'application/json'
+      description 'Get the currently authenticated user information. Requires valid JWT token in Authorization header.'
+      security [ bearerAuth: [] ]
 
-    context 'when user is not authenticated' do
-      it 'returns unauthorized status' do
-        get '/me', headers: { 'Accept' => 'application/json' }
+      response '200', 'User information retrieved successfully' do
+        schema type: :object,
+          properties: {
+            data: {
+              type: :object,
+              properties: {
+                id: { type: :string, example: '1' },
+                type: { type: :string, example: 'user' },
+                attributes: {
+                  type: :object,
+                  properties: {
+                    email: { type: :string, format: :email, example: 'user@example.com' },
+                    created_at: { type: :string, format: :date_time }
+                  }
+                }
+              }
+            }
+          },
+          required: [ 'data' ]
 
-        expect(response).to have_http_status(:unauthorized)
+        let(:Authorization) do
+          # Create a user and sign in to get a valid token
+          user = create_test_user(email: 'me@example.com')
+          post '/users/sign_in', params: { user: { email: user.email, password: 'password123' } }
+          response.headers['Authorization']
+        end
+
+        run_test! do
+          data = JSON.parse(response.body)
+          expect(data['data']).to be_present
+          expect(data['data']['id']).to be_present
+          expect(data['data']['type']).to eq('user')
+          expect(data['data']['attributes']).to be_present
+          expect(data['data']['attributes']['email']).to eq('me@example.com')
+        end
       end
 
-      it 'returns JSON error message' do
-        get '/me', headers: { 'Accept' => 'application/json' }
+      response '401', 'Unauthorized' do
+        schema type: :object,
+          properties: {
+            error: {
+              type: :string,
+              example: 'You need to sign in or sign up before continuing.',
+              description: 'Error message when authentication fails'
+            }
+          },
+          required: [ 'error' ]
 
-        json_response = JSON.parse(response.body)
-        expect(json_response).to have_key('error')
-        expect(json_response['error']).to be_present
-        expect(json_response['data']).to be_nil
-      end
-    end
+        context 'when no token is provided' do
+          let(:Authorization) { nil }
 
-    context 'when token is invalid' do
-      it 'returns unauthorized status' do
-        headers = {
-          'Authorization' => 'Bearer invalid_token',
-          'Accept' => 'application/json'
-        }
-        get '/me', headers: headers
+          run_test! do
+            data = JSON.parse(response.body)
+            expect(response).to have_http_status(:unauthorized)
+            expect(data['error']).to be_present
+          end
+        end
 
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
+        context 'when token is invalid' do
+          let(:Authorization) { 'Bearer invalid_token' }
 
-    context 'when token is expired' do
-      it 'returns unauthorized status' do
-        # Create an expired token
-        secret = ENV.fetch('DEVISE_JWT_SECRET_KEY') { Rails.application.secret_key_base }
-        payload = {
-          sub: user.id.to_s,
-          scp: 'user',
-          jti: user.jti,
-          exp: 1.day.ago.to_i # Expired token
-        }
-        expired_token = JWT.encode(payload, secret, 'HS256')
-        headers = {
-          'Authorization' => "Bearer #{expired_token}",
-          'Accept' => 'application/json'
-        }
+          run_test! do
+            data = JSON.parse(response.body)
+            expect(response).to have_http_status(:unauthorized)
+            expect(data['error']).to be_present
+          end
+        end
 
-        get '/me', headers: headers
+        context 'when token is expired' do
+          let(:Authorization) do
+            user = create_test_user(email: 'expired@example.com')
+            secret = ENV.fetch('DEVISE_JWT_SECRET_KEY') { Rails.application.secret_key_base }
+            payload = {
+              sub: user.id.to_s,
+              scp: 'user',
+              jti: user.jti,
+              exp: 1.day.ago.to_i
+            }
+            "Bearer #{JWT.encode(payload, secret, 'HS256')}"
+          end
 
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
-
-    context 'when user is authenticated' do
-      it 'returns the current user information' do
-        # First, sign in to get a real JWT token
-        post '/users/sign_in', params: { user: { email: user.email, password: 'password123' } }
-        token = response.headers['Authorization']
-
-        # Use the token from the sign-in response
-        headers = {
-          'Authorization' => token,
-          'Accept' => 'application/json'
-        }
-        get '/me', headers: headers
-
-        expect(response).to have_http_status(:ok)
-        json_response = JSON.parse(response.body)
-
-        expect(json_response['data']).to be_present
-        expect(json_response['data']['id']).to eq(user.id.to_s)
-        expect(json_response['data']['attributes']['email']).to eq(user.email)
-      end
-
-      it 'returns user data in JSONAPI format' do
-        # First, sign in to get a real JWT token
-        post '/users/sign_in', params: { user: { email: user.email, password: 'password123' } }
-        token = response.headers['Authorization']
-
-        # Use the token from the sign-in response
-        headers = {
-          'Authorization' => token,
-          'Accept' => 'application/json'
-        }
-        get '/me', headers: headers
-
-        json_response = JSON.parse(response.body)
-        expect(json_response['data']).to have_key('id')
-        expect(json_response['data']).to have_key('type')
-        expect(json_response['data']).to have_key('attributes')
-        expect(json_response['data']['attributes']).to have_key('email')
-        expect(json_response['data']['attributes']).to have_key('created_at')
+          run_test! do
+            data = JSON.parse(response.body)
+            expect(response).to have_http_status(:unauthorized)
+            expect(data['error']).to be_present
+          end
+        end
       end
     end
   end
