@@ -31,7 +31,7 @@ module ApiHelpers
     Movie.create!({
       title: 'Test Movie',
       tmdb_id: 12345,
-      release_year: 2020,
+      release_date: '2020-01-01',
       poster_url: 'https://example.com/poster.jpg',
       is_movie: true
     }.merge(attributes))
