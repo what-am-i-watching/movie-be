@@ -100,6 +100,90 @@ paths:
               required:
               - user
         required: true
+  "/users/sign_in":
+    post:
+      summary: Sign in
+      tags:
+      - Authentication
+      description: Authenticate user with email and password. Returns user data and
+        JWT in Authorization header.
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: User signed in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User signed in successfully
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                        format: email
+                      created_at:
+                        type: string
+                        format: date_time
+                      updated_at:
+                        type: string
+                        format: date_time
+                      jti:
+                        type: string
+                required:
+                - status
+                - message
+                - data
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid Email or password.
+                    description: Error message (e.g. invalid credentials or unauthenticated)
+                  message:
+                    type: string
+                    description: Additional i18n message when present
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                      description: User email address
+                    password:
+                      type: string
+                      format: password
+                      example: password123
+                      description: User password
+                  required:
+                  - email
+                  - password
+              required:
+              - user
+        required: true
 servers:
 - url: http://localhost:3000
   description: Development server
