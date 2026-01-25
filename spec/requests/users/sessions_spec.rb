@@ -1,9 +1,143 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require 'swagger_helper'
 require 'jwt'
 
 RSpec.describe 'Users::Sessions', type: :request do
+  path '/users/sign_in' do
+    post 'Sign in' do
+      tags 'Authentication'
+      consumes 'application/json'
+      produces 'application/json'
+      description 'Authenticate user with email and password. Returns user data and JWT in Authorization header.'
+      security [] # No authentication required for sign in
+
+      parameter name: :user, in: :body, required: true, schema: {
+        type: :object,
+        properties: {
+          user: {
+            type: :object,
+            properties: {
+              email: {
+                type: :string,
+                format: :email,
+                example: 'user@example.com',
+                description: 'User email address'
+              },
+              password: {
+                type: :string,
+                format: :password,
+                example: 'password123',
+                description: 'User password'
+              }
+            },
+            required: [ 'email', 'password' ]
+          }
+        },
+        required: [ 'user' ]
+      }
+
+      response '200', 'User signed in successfully' do
+        schema type: :object,
+          properties: {
+            status: {
+              type: :integer,
+              example: 200
+            },
+            message: {
+              type: :string,
+              example: 'User signed in successfully'
+            },
+            data: {
+              type: :object,
+              properties: {
+                id: { type: :integer },
+                email: { type: :string, format: :email },
+                created_at: { type: :string, format: :date_time },
+                updated_at: { type: :string, format: :date_time },
+                jti: { type: :string }
+              }
+            }
+          },
+          required: [ 'status', 'message', 'data' ]
+
+        let(:Authorization) { nil }
+        let!(:sign_in_user) { create_test_user(email: 'signin@example.com') }
+        let(:user) do
+          {
+            user: {
+              email: 'signin@example.com',
+              password: 'password123'
+            }
+          }
+        end
+
+        run_test! do
+          data = JSON.parse(response.body)
+          expect(data['status']).to eq(200)
+          expect(data['message']).to eq('User signed in successfully')
+          expect(data['data']).to be_present
+          expect(data['data']['email']).to eq('signin@example.com')
+          expect(response.headers['Authorization']).to be_present
+          expect(response.headers['Authorization']).to start_with('Bearer ')
+        end
+      end
+
+      response '401', 'Invalid credentials' do
+        schema type: :object,
+          properties: {
+            error: {
+              type: :string,
+              example: 'Invalid Email or password.',
+              description: 'Error message (e.g. invalid credentials or unauthenticated)'
+            },
+            message: {
+              type: :string,
+              description: 'Additional i18n message when present'
+            }
+          },
+          required: [ 'error' ]
+
+        context 'when password is wrong' do
+          let(:Authorization) { nil }
+          let!(:sign_in_user) { create_test_user(email: 'wrongpass@example.com') }
+          let(:user) do
+            {
+              user: {
+                email: 'wrongpass@example.com',
+                password: 'wrongpassword'
+              }
+            }
+          end
+
+          run_test! do
+            data = JSON.parse(response.body)
+            expect(response).to have_http_status(:unauthorized)
+            expect(data['error']).to be_present
+          end
+        end
+
+        context 'when email does not exist' do
+          let(:Authorization) { nil }
+          let(:user) do
+            {
+              user: {
+                email: 'nonexistent@example.com',
+                password: 'password123'
+              }
+            }
+          end
+
+          run_test! do
+            data = JSON.parse(response.body)
+            expect(response).to have_http_status(:unauthorized)
+            expect(data['error']).to be_present
+          end
+        end
+      end
+    end
+  end
+
   describe 'GET /me' do
     let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
 
