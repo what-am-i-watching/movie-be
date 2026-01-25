@@ -60,6 +60,10 @@ class MoviesController < ApplicationController
     @enriched_movies = MovieDataEnricher.enrich_collection(@movies, current_user)
 
     render json: { movies: @enriched_movies }, status: :ok
+  rescue StandardError => e
+    # TODO: Test error handling for the API call
+    Rails.logger.error "MovieService API Error: #{e.message}"
+    render json: { error: "Failed to fetch movies", details: e.message }, status: :internal_server_error
   end
 
   def details
