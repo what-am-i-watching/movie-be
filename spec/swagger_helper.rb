@@ -52,12 +52,9 @@ RSpec.configure do |config|
           }
         },
         schemas: {}
-      },
-      security: [
-        {
-          bearerAuth: []
-        }
-      ]
+      }
+      # Security is applied per endpoint, not globally
+      # Use security [bearerAuth: []] in endpoint specs that require authentication
     }
   }
 
