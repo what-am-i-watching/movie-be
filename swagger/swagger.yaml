@@ -184,6 +184,57 @@ paths:
               required:
               - user
         required: true
+  "/me":
+    get:
+      summary: Get current user
+      tags:
+      - Authentication
+      description: Get the currently authenticated user information. Requires valid
+        JWT token in Authorization header.
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: '1'
+                      type:
+                        type: string
+                        example: user
+                      attributes:
+                        type: object
+                        properties:
+                          email:
+                            type: string
+                            format: email
+                            example: user@example.com
+                          created_at:
+                            type: string
+                            format: date_time
+                required:
+                - data
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                    description: Error message when authentication fails
+                required:
+                - error
 servers:
 - url: http://localhost:3000
   description: Development server
