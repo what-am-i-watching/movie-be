@@ -222,6 +222,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.0-x86_64-linux-musl)
       racc (~> 1.4)
+    openssl (3.3.2)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
     overcommit (0.68.0)
@@ -357,7 +358,10 @@ GEM
     ruby-vips (2.3.0)
       ffi (~> 1.12)
       logger
+    ruby_http_client (3.6.0)
     securerandom (0.4.1)
+    sendgrid-ruby (6.7.0)
+      ruby_http_client (~> 3.4)
     solid_cable (3.0.12)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -433,6 +437,7 @@ DEPENDENCIES
   jsonapi-serializer
   kamal
   minitest
+  openssl (~> 3.3.1)
   overcommit
   pg (~> 1.1)
   puma (>= 5.0)
@@ -442,6 +447,7 @@ DEPENDENCIES
   redis-rails
   rspec-rails
   rubocop-rails-omakase
+  sendgrid-ruby
   solid_cable
   solid_cache
   solid_queue

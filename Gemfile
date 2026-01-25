@@ -4,6 +4,10 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.1"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
+
+# Fix OpenSSL certificate verification issue on Ruby 3.4.x
+# See: https://www.rubyonmac.dev/certificate-verify-failed-unable-to-get-certificate-crl-openssl-ssl-sslerror
+gem "openssl", "~> 3.3.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -52,6 +56,9 @@ gem "jsonapi-serializer"
 
 # Git hooks
 gem "overcommit", group: :development
+
+# Email
+gem "sendgrid-ruby"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

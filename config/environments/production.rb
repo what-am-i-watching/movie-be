@@ -60,15 +60,17 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "whatamiwatching.info" }
   config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   config.action_mailer.smtp_settings = {
-    user_name: ENV["GMAIL_USERNAME"],
-    password: ENV["GMAIL_APP_PASSWORD"],
-    address: "smtp.gmail.com",
+    address: "smtp.sendgrid.net",
     port: 587,
+    domain: "whatamiwatching.info",
+    user_name: "apikey",
+    password: ENV["SENDGRID_API_KEY"],
     authentication: :plain,
-    domain: "gmail.com",
     enable_starttls_auto: true
   }
 
