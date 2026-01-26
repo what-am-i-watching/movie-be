@@ -1446,15 +1446,17 @@ paths:
             application/json:
               schema:
                 type: object
-                description: ActiveModel::Errors format - errors are keyed by field
-                  name
-                additionalProperties:
-                  type: array
-                  items:
-                    type: string
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of validation error messages
+                required:
+                - errors
                 example:
-                  movie:
-                  - must exist
+                  errors:
+                  - Movie must exist
         '401':
           description: Unauthorized
           content:

@@ -55,6 +55,36 @@ RSpec.describe 'UserMovies::Destroy', type: :request do
         end
       end
 
+      response '404', 'User movie not found (authorization check)' do
+        schema type: :object,
+          properties: {
+            error: {
+              type: :string,
+              example: 'User movie not found'
+            }
+          },
+          required: [ 'error' ],
+          description: 'Returns 404 when user tries to delete another user\'s movie (authorization check)'
+
+        let!(:user1) { create_test_user(email: 'um-destroy-user1@example.com') }
+        let!(:user2) { create_test_user(email: 'um-destroy-user2@example.com') }
+        let!(:movie) { create_test_movie(tmdb_id: 603, title: 'The Matrix') }
+        let!(:user1_movie) { create_test_user_movie(user: user1, movie: movie) }
+        let(:Authorization) do
+          post '/users/sign_in', params: { user: { email: user2.email, password: 'password123' } }
+          response.headers['Authorization']
+        end
+        let(:id) { user1_movie.id }
+
+        run_test! do
+          data = JSON.parse(response.body)
+          expect(response).to have_http_status(:not_found)
+          expect(data['error']).to eq('User movie not found')
+          # Verify the user_movie still exists (user2 cannot delete user1's movie)
+          expect(UserMovie.find_by(id: user1_movie.id)).to be_present
+        end
+      end
+
       response '401', 'Unauthorized' do
         schema type: :object,
           properties: {

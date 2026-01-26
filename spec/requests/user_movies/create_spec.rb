@@ -245,13 +245,18 @@ RSpec.describe 'UserMovies::Create', type: :request do
 
       response '422', 'Validation errors' do
         schema type: :object,
-          description: 'ActiveModel::Errors format - errors are keyed by field name',
-          additionalProperties: {
-            type: :array,
-            items: { type: :string }
+          properties: {
+            errors: {
+              type: :array,
+              items: { type: :string },
+              description: 'Array of validation error messages'
+            }
           },
+          required: [ 'errors' ],
           example: {
-            movie: [ "must exist" ]
+            errors: [
+              "Movie must exist"
+            ]
           }
 
         let(:Authorization) do
@@ -271,9 +276,9 @@ RSpec.describe 'UserMovies::Create', type: :request do
         run_test! do
           data = JSON.parse(response.body)
           expect(response).to have_http_status(:unprocessable_entity)
-          # Errors are at root level (ActiveModel::Errors format)
-          expect(data).to be_a(Hash)
-          expect(data.keys.length).to be > 0
+          expect(data['errors']).to be_present
+          expect(data['errors']).to be_an(Array)
+          expect(data['errors'].length).to be > 0
         end
       end
 

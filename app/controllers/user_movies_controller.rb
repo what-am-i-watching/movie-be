@@ -2,8 +2,7 @@ class UserMoviesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    user_movies = current_user.user_movies.includes(:movie) || []
-
+    user_movies = current_user.user_movies.includes(:movie)
     movies = user_movies.map(&:movie).compact
     enriched_movies = movies.map { |movie| MovieDataEnricher.enrich_with_user_data(movie, current_user) }
 
@@ -11,25 +10,25 @@ class UserMoviesController < ApplicationController
   end
 
   def create
-    @user_movie = current_user.user_movies.find_by({ movie_id: user_movie_params["movie_id"], user_id: current_user["id"] })
-    if @user_movie
-      @user_movie.update(user_movie_params)
-      # NOTE: since we show by create date, the user watched order is off
-    else
-      @user_movie = current_user.user_movies.find_or_create_by(user_movie_params)
-    end
+    user_movie = current_user.user_movies.find_or_initialize_by(movie_id: user_movie_params[:movie_id])
+    user_movie.assign_attributes(user_movie_params)
 
-    if @user_movie.save
-      @enriched_movie = MovieDataEnricher.enrich_with_user_data(@user_movie.movie, current_user)
-      render json: { user_movie: @enriched_movie }, status: :created
+    if user_movie.save
+      enriched_movie = MovieDataEnricher.enrich_with_user_data(user_movie.movie, current_user)
+      render json: { user_movie: enriched_movie }, status: :created
     else
-      render json: @user_movie.errors, status: :unprocessable_entity
+      render json: { errors: user_movie.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 
   def destroy
-    user_movie = UserMovie.find(params["id"])
+    user_movie = current_user.user_movies.find(params[:id])
     user_movie.destroy
+    head :no_content
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "User movie not found" }, status: :not_found
   end
 
   private
