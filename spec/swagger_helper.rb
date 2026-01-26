@@ -20,9 +20,15 @@ RSpec.configure do |config|
       info: {
         title: 'What Am I Watching? API',
         version: '1.0.0',
-        description: 'API for managing movies and TV shows watchlists',
+        description: "REST API for managing movies and TV shows watchlists. Supports user authentication (JWT), movie search and details via [The Movie Database (TMDB)](https://www.themoviedb.org), and user-specific lists with watch status, ratings, and notes.\n\n**Attribution:** This product uses the TMDB API but is not endorsed or certified by TMDB.",
         contact: {
+          name: 'What Am I Watching?',
+          url: 'https://whatamiwatching.info',
           email: 'whatamiwatching.info@gmail.com'
+        },
+        license: {
+          name: 'MIT',
+          url: 'https://opensource.org/licenses/MIT'
         }
       },
       paths: {},
@@ -37,10 +43,9 @@ RSpec.configure do |config|
         }
       ],
       tags: [
-        { name: 'Authentication', description: 'User authentication endpoints' },
-        { name: 'Movies', description: 'Movie and TV show endpoints' },
-        { name: 'User Movies', description: 'User movie list management' },
-        { name: 'Health', description: 'Health check endpoints' }
+        { name: 'Authentication', description: 'User registration, sign in/out, password reset, and current user' },
+        { name: 'Movies', description: 'Search, popular, details, create, and fetch movies/TV shows by ID' },
+        { name: 'User Movies', description: 'List, add, and remove movies/shows from the user\'s watchlist' }
       ],
       components: {
         securitySchemes: {

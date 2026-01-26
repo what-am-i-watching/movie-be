@@ -1,16 +1,17 @@
-# README
+# What Am I Watching? API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+REST API for managing movies and TV shows watchlists.
 
-Things you may want to cover:
+## Getting Started
+
+### Requirements
 
 * Ruby version: 3.4.7
 * Rails version: 8.1.1
 
-* System dependencies
+### System Dependencies
 
-The following gems were used:
+The following gems are used:
 ```
 gem 'rack-cors'
 gem 'devise'
@@ -19,150 +20,110 @@ gem 'faraday'
 gem 'dotenv-rails'
 gem 'redis-rails'
 gem 'jsonapi-serializer'
+gem 'rswag'
 ```
 
-An API key for [The Movie Database](https://www.themoviedb.org/) is needed for this application. Get your [API key](https://developer.themoviedb.org/docs/getting-started) and add it into your .env file as `TMDB_API_KEY`.
+### Configuration
 
-* Configuration
+An API key for [The Movie Database (TMDB)](https://www.themoviedb.org/) is required. Get your [API key](https://developer.themoviedb.org/docs/getting-started) and add it to your `.env` file as `TMDB_API_KEY`.
 
-* Database creation
+### Attribution
 
-* Database initialization
+This product uses the TMDB API but is not endorsed or certified by TMDB. See [TMDB's attribution requirements](https://developer.themoviedb.org/docs/faq).
 
-* How to run the test suite
+![TMDB Logo](images/tmdb-logo.svg)
 
-* Services (job queues, cache servers, search engines, etc.)
+## API Documentation
 
-* Deployment instructions
+### Swagger UI
 
-* ...
+Interactive API documentation is available via Swagger UI:
 
-Authentication has been set up using [devise](https://github.com/heartcombo/devise) and [devise-jwt](https://github.com/waiting-for-dev/devise-jwt).
+**Development:** `http://localhost:3000/api-docs`  
+**Production:** `https://whatamiwatching.info/api-docs`
 
-# Logging In and Out Using Postman
+The Swagger UI provides:
+- Complete API endpoint documentation
+- Interactive testing interface
+- Request/response schemas
+- Authentication examples
 
-## Create a new user
-`POST: http://localhost:3000/users`
+You can test all endpoints directly from the Swagger UI by:
+1. Signing in via `POST /users/sign_in` to get a JWT token
+2. Clicking the "Authorize" button at the top
+3. Entering your token (format: `Bearer <your-token>`)
+4. Testing any authenticated endpoint
 
-In the body, add raw JSON with the data for the user you want to create:
+### OpenAPI Specification
 
-```
+The OpenAPI 3.0 specification is generated at `swagger/swagger.yaml` and can be imported into API clients like Postman, Insomnia, or used for code generation.
+
+## Health Check Endpoints
+
+These endpoints are not included in the Swagger documentation but are available for monitoring:
+
+### GET /health
+
+Returns detailed health status information. No authentication required.
+
+**Response (200 OK):**
+```json
 {
-    "user": {
-        "email": "user@example.com",
-        "password": "password123"
-    }
+  "status": "online",
+  "database_connected": true,
+  "existing_tables": ["users", "movies", "user_movies", ...],
+  "solid_cache_exists": true,
+  "rails_env": "development"
 }
 ```
 
-### Example response:
-```
+**Error Response (500):**
+```json
 {
-    "status": {
-        "code": 200,
-        "message": "Signed up successfully",
-        "data": {
-            "id": 4,
-            "email": "user@example.com",
-            "created_at": "2025-12-18T21:38:17.980Z",
-            "updated_at": "2025-12-18T21:38:17.980Z",
-            "jti": "16c6bd9b-7aad-4754-b928-78eaajilvf3gq4ber"
-        }
-    }
+  "error": "Error message",
+  "backtrace": ["..."]
 }
 ```
 
-You can also see authorization token returned in the Headers of the response.
+### GET /up
 
-## Log out
-`DELETE: http://localhost:3000/users/sign_out`
+Simple health check endpoint for load balancers and uptime monitors. Returns 200 OK when the app is healthy, 500 when there are exceptions. No authentication required.
 
-After a successful login, copy the authorization token from the response header (ex: `Bearer efgHuBUlGyugug...`).
+## Authentication
 
-Add the token to the delete request with `Authorization` as the key and the token as the value, including the "Bearer ".
+Authentication is implemented using [Devise](https://github.com/heartcombo/devise) and [Devise JWT](https://github.com/waiting-for-dev/devise-jwt).
 
-### Example Response:
-```
-{
-    "status": 200,
-    "message": "Signed out successfully"
-}
-```
+### Getting a JWT Token
 
-## Logging in
-`POST: http://localhost:3000/users/sign_in`
+1. Register a new user: `POST /users` (see Swagger docs for request format)
+2. Sign in: `POST /users/sign_in` (see Swagger docs for request format)
+3. Copy the JWT token from the `Authorization` header in the response
+4. Include it in subsequent requests: `Authorization: Bearer <token>`
 
-In the body, add raw JSON with the data of an existing user:
+### Protected Endpoints
 
-```
-{
-    "user": {
-        "email": "user@example.com",
-        "password": "password123"
-    }
-}
-```
+Most endpoints require authentication. Include the JWT token in the `Authorization` header for all protected endpoints.
 
-### Example response:
-```
-{
-    "status": {
-        "code": 200,
-        "message": "User signed in successfully",
-        "data": {
-            "id": 4,
-            "email": "user@example.com",
-            "created_at": "2025-12-18T21:38:17.980Z",
-            "updated_at": "2025-12-18T21:38:17.980Z",
-            "jti": "16c6bd9b-7aad-4754-b928-78eaajilvf3gq4ber"
-        }
-    }
-}
+## Database
+
+* Database creation: `rails db:create`
+* Database initialization: `rails db:migrate`
+* Database seeding: `rails db:seed`
+
+## Testing
+
+Run the test suite:
+```bash
+bundle exec rspec
 ```
 
-# Searching for Movies
-
-## Search
-`GET: http://localhost:3000/movies/search?query=jurassic+park`
-
-Add your own search term
-
-### Example response:
-```
-{
-    "movies": [
-        {
-            "tmdb_id": 329,
-            "genre_ids": [
-                12,
-                878
-            ],
-            "title": "Jurassic Park",
-            "overview": "A wealthy entrepreneur secretly creates a theme park featuring living dinosaurs drawn from prehistoric DNA. Before opening day, he invites a team of experts and his two eager grandchildren to experience the park and help calm anxious investors. However, the park is anything but amusing as the security systems go off-line and the dinosaurs escape.",
-            "poster_path": "/bRKmwU9eXZI5dKT11Zx1KsayiLW.jpg",
-            "release_date": "1993-06-11",
-            "vote_average": 7.964,
-            "vote_count": 17347
-        },
-        {
-            "tmdb_id": 995456,
-            "genre_ids": [
-                99
-            ],
-            "title": "Jurassic Greatest Moments: Jurassic Park to Jurassic World",
-            "overview": "Join the cast of \"Jurassic World Dominion\" as they relive their favorite unforgettable, action-packed and epic moments from the \"Jurassic World\" franchise.",
-            "poster_path": "/tPdsrxdJBBIvJi5rwcnYGUoPAai.jpg",
-            "release_date": "2022-06-04",
-            "vote_average": 7.0,
-            "vote_count": 12
-        }
-    ]
-}
+Generate/update OpenAPI specification:
+```bash
+bundle exec rake rswag:specs:swaggerize
 ```
 
-And if none match the search query
-```
-{
-    "movies": []
-}
-```
+## Deployment
+
+See deployment-specific configuration in:
+- `config/deploy.yml` (Kamal deployment)
+- `render.yaml` (Render deployment)
