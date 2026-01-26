@@ -2,7 +2,6 @@
 
 class CustomFailureApp < Devise::FailureApp
   def respond
-    # For API requests, always return JSON
     if request.format == :json || request.content_type&.include?("application/json") || api_request?
       json_error_response
     else

@@ -2,7 +2,6 @@ class HealthController < ApplicationController
   skip_before_action :authenticate_user!, raise: false
 
   def check
-    # This will tell us exactly which tables exist in the production DB
     tables = ActiveRecord::Base.connection.tables
 
     render json: {
