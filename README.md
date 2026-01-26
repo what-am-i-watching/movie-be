@@ -35,12 +35,11 @@ This product uses the TMDB API but is not endorsed or certified by TMDB. See [TM
 
 ## API Documentation
 
-### Swagger UI
+### Swagger UI (Development Only)
 
-Interactive API documentation is available via Swagger UI:
+Interactive API documentation is available via Swagger UI in development:
 
-**Development:** `http://localhost:3000/api-docs`  
-**Production:** `https://whatamiwatching.info/api-docs`
+**Development:** `http://localhost:3000/api-docs`
 
 The Swagger UI provides:
 - Complete API endpoint documentation
@@ -56,7 +55,10 @@ You can test all endpoints directly from the Swagger UI by:
 
 ### OpenAPI Specification
 
-The OpenAPI 3.0 specification is generated at `swagger/swagger.yaml` and can be imported into API clients like Postman, Insomnia, or used for code generation.
+The OpenAPI 3.0 specification is generated at `swagger/swagger.yaml` and can be:
+- Imported into API clients like Postman, Insomnia
+- Used for code generation
+- Referenced for API integration
 
 ## Health Check Endpoints
 

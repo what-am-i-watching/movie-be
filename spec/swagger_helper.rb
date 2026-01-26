@@ -36,10 +36,6 @@ RSpec.configure do |config|
         {
           url: 'http://localhost:3000',
           description: 'Development server'
-        },
-        {
-          url: 'https://whatamiwatching.info',
-          description: 'Production server'
         }
       ],
       tags: [

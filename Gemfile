@@ -81,7 +81,7 @@ group :development, :test do
 end
 
 group :development do
-  # OpenAPI/Swagger API and UI
+  # OpenAPI/Swagger API and UI only in development
   gem "rswag-api"
   gem "rswag-ui"
 end

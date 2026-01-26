@@ -2151,8 +2151,6 @@ paths:
 servers:
 - url: http://localhost:3000
   description: Development server
-- url: https://whatamiwatching.info
-  description: Production server
 tags:
 - name: Authentication
   description: User registration, sign in/out, password reset, and current user
