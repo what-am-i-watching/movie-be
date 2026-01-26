@@ -75,6 +75,15 @@ group :development, :test do
 
   # Testing framework
   gem "rspec-rails"
+
+  # OpenAPI/Swagger documentation
+  gem "rswag-specs"
+end
+
+group :development do
+  # OpenAPI/Swagger API and UI
+  gem "rswag-api"
+  gem "rswag-ui"
 end
 
 group :test do

@@ -1,0 +1,2347 @@
+---
+openapi: 3.0.1
+info:
+  title: What Am I Watching? API
+  version: 1.0.0
+  description: |-
+    REST API for managing movies and TV shows watchlists. Supports user authentication (JWT), movie search and details via [The Movie Database (TMDB)](https://www.themoviedb.org), and user-specific lists with watch status, ratings, and notes.
+
+    **Attribution:** This product uses the TMDB API but is not endorsed or certified by TMDB.
+  contact:
+    name: What Am I Watching?
+    url: https://whatamiwatching.info
+    email: whatamiwatching.info@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+paths:
+  "/movies":
+    post:
+      summary: Create a new movie or TV show
+      tags:
+      - Movies
+      description: Create a new movie or TV show in the database. If a movie with
+        the same tmdb_id already exists, returns the existing movie with status 200.
+        Otherwise, creates a new movie and returns it with status 201.
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: Movie already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movie:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Database ID
+                        example: 1
+                      tmdb_id:
+                        type: integer
+                        description: TMDB (The Movie Database) ID
+                        example: 603
+                      title:
+                        type: string
+                        description: Movie or TV show title
+                        example: The Matrix
+                      release_date:
+                        type: string
+                        format: date
+                        nullable: true
+                        description: Release date (movies) or first air date (TV shows)
+                        example: '1999-03-31'
+                      poster_path:
+                        type: string
+                        nullable: true
+                        description: Poster image path/URL
+                        example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                      is_movie:
+                        type: boolean
+                        description: True if movie, false if TV show
+                        example: true
+                      in_list:
+                        type: boolean
+                        description: Whether this movie/show is in the user's list
+                        example: false
+                      user_movie_id:
+                        type: integer
+                        nullable: true
+                        description: User movie association ID (if in_list is true)
+                        example: 5
+                      status:
+                        type: string
+                        nullable: true
+                        description: User watch status (to_watch, watching, watched)
+                          if in_list is true, otherwise TMDB release status (e.g.,
+                          "Released", "Post Production")
+                        example: to_watch
+                      tmdb_status:
+                        type: string
+                        nullable: true
+                        description: TMDB release status (e.g., "Released", "Post
+                          Production") - only present when movie is not in user list
+                        example: Released
+                      rating:
+                        type: integer
+                        nullable: true
+                        description: User rating (only present if in_list is true)
+                        example: 5
+                      notes:
+                        type: string
+                        nullable: true
+                        description: User notes (only present if in_list is true)
+                        example: Great movie!
+                      progress_notes:
+                        type: string
+                        nullable: true
+                        description: Progress notes for TV shows (only present if
+                          in_list is true)
+                        example: On season 2, episode 4
+                      overview:
+                        type: string
+                        nullable: true
+                        description: Plot overview/synopsis
+                        example: A computer hacker learns about the true nature of
+                          reality...
+                      popularity:
+                        type: number
+                        description: Popularity score from TMDB
+                        example: 85.5
+                      adult:
+                        type: boolean
+                        description: Whether the content is marked as adult
+                        example: false
+                      backdrop_path:
+                        type: string
+                        nullable: true
+                        description: Backdrop image path/URL
+                        example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                      genre_ids:
+                        type: array
+                        items:
+                          type: integer
+                        description: Array of genre IDs from TMDB
+                        example:
+                        - 18
+                        - 878
+                        - 9648
+                      original_language:
+                        type: string
+                        nullable: true
+                        description: Original language code (e.g., "en", "es")
+                        example: en
+                      original_title:
+                        type: string
+                        nullable: true
+                        description: Original title (may differ from localized title)
+                        example: Arrival
+                      video:
+                        type: boolean
+                        description: Whether the content has video (typically false
+                          for movies)
+                        example: false
+                      vote_average:
+                        type: number
+                        description: Average vote rating from TMDB
+                        example: 7.623
+                      vote_count:
+                        type: integer
+                        description: Number of votes on TMDB
+                        example: 18910
+                required:
+                - movie
+                example:
+                  movie:
+                    id: 1
+                    tmdb_id: 603
+                    title: The Matrix
+                    release_date: '1999-03-31'
+                    poster_path: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                    is_movie: true
+                    in_list: false
+                    user_movie_id:
+                    status:
+                    tmdb_status: Released
+                    rating:
+                    notes:
+                    progress_notes:
+                    overview: A computer hacker learns from mysterious rebels about
+                      the true nature of his reality and his role in the war against
+                      its controllers.
+                    popularity: 85.5
+                    adult: false
+                    backdrop_path: "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg"
+                    genre_ids:
+                    - 28
+                    - 878
+                    original_language: en
+                    original_title: The Matrix
+                    video: false
+                    vote_average: 8.7
+                    vote_count: 25000
+        '201':
+          description: Movie created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movie:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Database ID
+                        example: 1
+                      tmdb_id:
+                        type: integer
+                        description: TMDB (The Movie Database) ID
+                        example: 603
+                      title:
+                        type: string
+                        description: Movie or TV show title
+                        example: The Matrix
+                      release_date:
+                        type: string
+                        format: date
+                        nullable: true
+                        description: Release date (movies) or first air date (TV shows)
+                        example: '1999-03-31'
+                      poster_path:
+                        type: string
+                        nullable: true
+                        description: Poster image path/URL
+                        example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                      is_movie:
+                        type: boolean
+                        description: True if movie, false if TV show
+                        example: true
+                      in_list:
+                        type: boolean
+                        description: Whether this movie/show is in the user's list
+                        example: false
+                      user_movie_id:
+                        type: integer
+                        nullable: true
+                        description: User movie association ID (if in_list is true)
+                        example: 5
+                      status:
+                        type: string
+                        nullable: true
+                        description: User watch status (to_watch, watching, watched)
+                          if in_list is true, otherwise TMDB release status (e.g.,
+                          "Released", "Post Production")
+                        example: to_watch
+                      tmdb_status:
+                        type: string
+                        nullable: true
+                        description: TMDB release status (e.g., "Released", "Post
+                          Production") - only present when movie is not in user list
+                        example: Released
+                      rating:
+                        type: integer
+                        nullable: true
+                        description: User rating (only present if in_list is true)
+                        example: 5
+                      notes:
+                        type: string
+                        nullable: true
+                        description: User notes (only present if in_list is true)
+                        example: Great movie!
+                      progress_notes:
+                        type: string
+                        nullable: true
+                        description: Progress notes for TV shows (only present if
+                          in_list is true)
+                        example: On season 2, episode 4
+                      overview:
+                        type: string
+                        nullable: true
+                        description: Plot overview/synopsis
+                        example: A computer hacker learns about the true nature of
+                          reality...
+                      popularity:
+                        type: number
+                        description: Popularity score from TMDB
+                        example: 85.5
+                      adult:
+                        type: boolean
+                        description: Whether the content is marked as adult
+                        example: false
+                      backdrop_path:
+                        type: string
+                        nullable: true
+                        description: Backdrop image path/URL
+                        example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                      genre_ids:
+                        type: array
+                        items:
+                          type: integer
+                        description: Array of genre IDs from TMDB
+                        example:
+                        - 18
+                        - 878
+                        - 9648
+                      original_language:
+                        type: string
+                        nullable: true
+                        description: Original language code (e.g., "en", "es")
+                        example: en
+                      original_title:
+                        type: string
+                        nullable: true
+                        description: Original title (may differ from localized title)
+                        example: Arrival
+                      video:
+                        type: boolean
+                        description: Whether the content has video (typically false
+                          for movies)
+                        example: false
+                      vote_average:
+                        type: number
+                        description: Average vote rating from TMDB
+                        example: 7.623
+                      vote_count:
+                        type: integer
+                        description: Number of votes on TMDB
+                        example: 18910
+                required:
+                - movie
+                example:
+                  movie:
+                    id: 1
+                    tmdb_id: 603
+                    title: The Matrix
+                    release_date: '1999-03-31'
+                    poster_path: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                    is_movie: true
+                    in_list: false
+                    user_movie_id:
+                    status:
+                    tmdb_status: Released
+                    rating:
+                    notes:
+                    progress_notes:
+                    overview: A computer hacker learns from mysterious rebels about
+                      the true nature of his reality and his role in the war against
+                      its controllers.
+                    popularity: 85.5
+                    adult: false
+                    backdrop_path: "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg"
+                    genre_ids:
+                    - 28
+                    - 878
+                    original_language: en
+                    original_title: The Matrix
+                    video: false
+                    vote_average: 8.7
+                    vote_count: 25000
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of validation error messages
+                example:
+                  errors:
+                  - Tmdb can't be blank
+                  - Title can't be blank
+                  - Release year can't be blank
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Movie or TV show title
+                  example: The Matrix
+                tmdb_id:
+                  type: integer
+                  description: TMDB (The Movie Database) ID
+                  example: 603
+                release_date:
+                  type: string
+                  format: date
+                  description: Release date (movies) or first air date (TV shows)
+                    in YYYY-MM-DD format
+                  example: '1999-03-31'
+                poster_url:
+                  type: string
+                  nullable: true
+                  description: Poster image URL
+                  example: https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg
+                is_movie:
+                  type: boolean
+                  description: True if movie, false if TV show
+                  example: true
+              required:
+              - title
+              - tmdb_id
+              - release_date
+              - is_movie
+  "/movies/details/{tmdb_id}":
+    get:
+      summary: Get movie or TV show details
+      tags:
+      - Movies
+      description: Get detailed information for a movie or TV show by TMDB ID. Fetches
+        data from TMDB API and enriches with user-specific data.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: tmdb_id
+        in: path
+        required: true
+        description: TMDB (The Movie Database) ID
+        example: '603'
+        schema:
+          type: string
+      - name: is_movie
+        in: query
+        required: false
+        description: Whether the ID refers to a movie (true) or TV show (false). Defaults
+          to true if not specified or not "false".
+        example: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Movie details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movie:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        nullable: true
+                        description: Database ID (nil if not in database)
+                        example: 1
+                      tmdb_id:
+                        type: integer
+                        description: TMDB (The Movie Database) ID
+                        example: 603
+                      title:
+                        type: string
+                        description: Movie or TV show title
+                        example: The Matrix
+                      release_date:
+                        type: string
+                        format: date
+                        nullable: true
+                        description: Release date (movies) or first air date (TV shows)
+                        example: '1999-03-31'
+                      poster_path:
+                        type: string
+                        nullable: true
+                        description: Poster image path/URL
+                        example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                      is_movie:
+                        type: boolean
+                        description: True if movie, false if TV show
+                        example: true
+                      in_list:
+                        type: boolean
+                        description: Whether this movie/show is in the user's list
+                        example: false
+                      user_movie_id:
+                        type: integer
+                        nullable: true
+                        description: User movie association ID (if in_list is true)
+                        example: 5
+                      status:
+                        type: string
+                        nullable: true
+                        description: User watch status (to_watch, watching, watched)
+                          if in_list is true, otherwise TMDB release status (e.g.,
+                          "Released", "Post Production")
+                        example: to_watch
+                      tmdb_status:
+                        type: string
+                        nullable: true
+                        description: TMDB release status (e.g., "Released", "Post
+                          Production") - only present when movie is not in user list
+                        example: Released
+                      rating:
+                        type: integer
+                        nullable: true
+                        description: User rating (only present if in_list is true)
+                        example: 5
+                      notes:
+                        type: string
+                        nullable: true
+                        description: User notes (only present if in_list is true)
+                        example: Great movie!
+                      progress_notes:
+                        type: string
+                        nullable: true
+                        description: Progress notes for TV shows (only present if
+                          in_list is true)
+                        example: On season 2, episode 4
+                      overview:
+                        type: string
+                        nullable: true
+                        description: Plot overview/synopsis
+                        example: A computer hacker learns about the true nature of
+                          reality...
+                      popularity:
+                        type: number
+                        description: Popularity score from TMDB
+                        example: 85.5
+                      adult:
+                        type: boolean
+                        description: Whether the content is marked as adult
+                        example: false
+                      backdrop_path:
+                        type: string
+                        nullable: true
+                        description: Backdrop image path/URL
+                        example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                      genre_ids:
+                        type: array
+                        items:
+                          type: integer
+                        description: Array of genre IDs from TMDB
+                        example:
+                        - 18
+                        - 878
+                        - 9648
+                      original_language:
+                        type: string
+                        nullable: true
+                        description: Original language code (e.g., "en", "es")
+                        example: en
+                      original_title:
+                        type: string
+                        nullable: true
+                        description: Original title (may differ from localized title)
+                        example: Arrival
+                      video:
+                        type: boolean
+                        description: Whether the content has video (typically false
+                          for movies)
+                        example: false
+                      vote_average:
+                        type: number
+                        description: Average vote rating from TMDB
+                        example: 7.623
+                      vote_count:
+                        type: integer
+                        description: Number of votes on TMDB
+                        example: 18910
+                required:
+                - movie
+                example:
+                  movie:
+                    id:
+                    tmdb_id: 603
+                    title: The Matrix
+                    release_date: '1999-03-31'
+                    poster_path: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                    is_movie: true
+                    in_list: false
+                    user_movie_id:
+                    overview: A computer hacker learns from mysterious rebels about
+                      the true nature of his reality and his role in the war against
+                      its controllers.
+                    popularity: 85.5
+                    adult: false
+                    backdrop_path: "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg"
+                    genre_ids:
+                    - 28
+                    - 878
+                    original_language: en
+                    original_title: The Matrix
+                    video: false
+                    vote_average: 8.7
+                    vote_count: 25000
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
+        '422':
+          description: Unprocessable entity - MovieService error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: API request failed
+                required:
+                - error
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to fetch movie details
+                  details:
+                    type: string
+                    description: Error details
+                    example: Connection timeout
+                required:
+                - error
+  "/movies/popular":
+    get:
+      summary: Get popular movies
+      tags:
+      - Movies
+      description: Get a list of currently popular movies from TMDB. Results are enriched
+        with user-specific data (in_list, status, rating, etc.).
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Popular movies list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movies:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          nullable: true
+                          description: Database ID (nil if not in database)
+                          example: 1
+                        tmdb_id:
+                          type: integer
+                          description: TMDB (The Movie Database) ID
+                          example: 603
+                        title:
+                          type: string
+                          description: Movie title
+                          example: The Matrix
+                        release_date:
+                          type: string
+                          format: date
+                          nullable: true
+                          description: Release date
+                          example: '1999-03-31'
+                        poster_path:
+                          type: string
+                          nullable: true
+                          description: Poster image path/URL
+                          example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                        is_movie:
+                          type: boolean
+                          description: True if movie, false if TV show
+                          example: true
+                        in_list:
+                          type: boolean
+                          description: Whether this movie is in the user's list
+                          example: false
+                        user_movie_id:
+                          type: integer
+                          nullable: true
+                          description: User movie association ID (if in_list is true)
+                          example: 5
+                        status:
+                          type: string
+                          nullable: true
+                          enum:
+                          - to_watch
+                          - watching
+                          - watched
+                          description: Watch status (only present if in_list is true)
+                          example: to_watch
+                        rating:
+                          type: integer
+                          nullable: true
+                          description: User rating (only present if in_list is true)
+                          example: 5
+                        notes:
+                          type: string
+                          nullable: true
+                          description: User notes (only present if in_list is true)
+                          example: Great movie!
+                        progress_notes:
+                          type: string
+                          nullable: true
+                          description: Progress notes for TV shows (only present if
+                            in_list is true)
+                          example: On season 2, episode 4
+                        overview:
+                          type: string
+                          nullable: true
+                          description: Plot overview/synopsis
+                          example: A computer hacker learns about the true nature
+                            of reality...
+                        popularity:
+                          type: number
+                          description: Popularity score from TMDB
+                          example: 85.5
+                        adult:
+                          type: boolean
+                          description: Whether the content is marked as adult
+                          example: false
+                        backdrop_path:
+                          type: string
+                          nullable: true
+                          description: Backdrop image path/URL
+                          example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                        genre_ids:
+                          type: array
+                          items:
+                            type: integer
+                          description: Array of genre IDs from TMDB
+                          example:
+                          - 18
+                          - 878
+                          - 9648
+                        original_language:
+                          type: string
+                          nullable: true
+                          description: Original language code (e.g., "en", "es")
+                          example: en
+                        original_title:
+                          type: string
+                          nullable: true
+                          description: Original title (may differ from localized title)
+                          example: Arrival
+                        video:
+                          type: boolean
+                          description: Whether the content has video (typically false
+                            for movies)
+                          example: false
+                        vote_average:
+                          type: number
+                          description: Average vote rating from TMDB
+                          example: 7.623
+                        vote_count:
+                          type: integer
+                          description: Number of votes on TMDB
+                          example: 18910
+                required:
+                - movies
+                example:
+                  movies:
+                  - id:
+                    tmdb_id: 550
+                    title: Fight Club
+                    release_date: '1999-10-15'
+                    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"
+                    is_movie: true
+                    in_list: false
+                    user_movie_id:
+                    overview: A ticking-time-bomb insomniac and a slippery soap salesman
+                      channel primal male aggression into a shocking new form of therapy.
+                    popularity: 67.2
+                    adult: false
+                    backdrop_path: "/87hTDiay2N2qWyX4am7nykG2w7n.jpg"
+                    genre_ids:
+                    - 18
+                    original_language: en
+                    original_title: Fight Club
+                    video: false
+                    vote_average: 8.4
+                    vote_count: 28000
+                  - id: 12
+                    tmdb_id: 278
+                    title: The Shawshank Redemption
+                    release_date: '1994-09-23'
+                    poster_path: "/9cqN61F9bG7cxOBcALofZTkN6nL.jpg"
+                    is_movie: true
+                    in_list: true
+                    user_movie_id: 15
+                    status: watched
+                    rating: 5
+                    notes: One of my favorites!
+                    progress_notes:
+                    overview: Framed in the 1940s for the double murder of his wife
+                      and her lover, upstanding banker Andy Dufresne begins a new
+                      life at the Shawshank prison.
+                    popularity: 92.5
+                    adult: false
+                    backdrop_path: "/iNh3BivHyg5sQRPP1KOkzguEX0H.jpg"
+                    genre_ids:
+                    - 18
+                    - 80
+                    original_language: en
+                    original_title: The Shawshank Redemption
+                    video: false
+                    vote_average: 9.3
+                    vote_count: 28000
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to fetch movies
+                  details:
+                    type: string
+                    description: Error details
+                    example: Connection timeout
+                required:
+                - error
+  "/movies/search":
+    get:
+      summary: Search movies and TV shows
+      tags:
+      - Movies
+      description: Search for movies and TV shows by query string. Returns combined
+        results sorted by popularity.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: query
+        in: query
+        required: true
+        description: Search query string
+        example: The Matrix
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Empty results when query is missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movies:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          nullable: true
+                          description: Database ID (nil if not in database)
+                          example: 1
+                        tmdb_id:
+                          type: integer
+                          description: TMDB (The Movie Database) ID
+                          example: 603
+                        title:
+                          type: string
+                          description: Movie or TV show title
+                          example: The Matrix
+                        release_date:
+                          type: string
+                          format: date
+                          nullable: true
+                          description: Release date (movies) or first air date (TV
+                            shows)
+                          example: '1999-03-31'
+                        poster_path:
+                          type: string
+                          nullable: true
+                          description: Poster image path/URL
+                          example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                        is_movie:
+                          type: boolean
+                          description: True if movie, false if TV show
+                          example: true
+                        in_list:
+                          type: boolean
+                          description: Whether this movie/show is in the user's list
+                          example: false
+                        user_movie_id:
+                          type: integer
+                          nullable: true
+                          description: User movie association ID (if in_list is true)
+                          example: 5
+                        status:
+                          type: string
+                          nullable: true
+                          enum:
+                          - to_watch
+                          - watching
+                          - watched
+                          description: Watch status (only present if in_list is true)
+                          example: to_watch
+                        rating:
+                          type: integer
+                          nullable: true
+                          description: User rating (only present if in_list is true)
+                          example: 5
+                        notes:
+                          type: string
+                          nullable: true
+                          description: User notes (only present if in_list is true)
+                          example: Great movie!
+                        progress_notes:
+                          type: string
+                          nullable: true
+                          description: Progress notes for TV shows (only present if
+                            in_list is true)
+                          example: On season 2, episode 4
+                        overview:
+                          type: string
+                          nullable: true
+                          description: Plot overview/synopsis
+                          example: A computer hacker learns about the true nature
+                            of reality...
+                        popularity:
+                          type: number
+                          description: Popularity score from TMDB
+                          example: 85.5
+                        adult:
+                          type: boolean
+                          description: Whether the content is marked as adult
+                          example: false
+                        backdrop_path:
+                          type: string
+                          nullable: true
+                          description: Backdrop image path/URL
+                          example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                        genre_ids:
+                          type: array
+                          items:
+                            type: integer
+                          description: Array of genre IDs from TMDB
+                          example:
+                          - 18
+                          - 878
+                          - 9648
+                        original_language:
+                          type: string
+                          nullable: true
+                          description: Original language code (e.g., "en", "es")
+                          example: en
+                        original_title:
+                          type: string
+                          nullable: true
+                          description: Original title (may differ from localized title)
+                          example: Arrival
+                        video:
+                          type: boolean
+                          description: Whether the content has video (typically false
+                            for movies)
+                          example: false
+                        vote_average:
+                          type: number
+                          description: Average vote rating from TMDB
+                          example: 7.623
+                        vote_count:
+                          type: integer
+                          description: Number of votes on TMDB
+                          example: 18910
+                    example: []
+                required:
+                - movies
+                example:
+                  movies:
+                  - id: 38
+                    tmdb_id: 329865
+                    title: Arrival
+                    release_date: '2016-11-10'
+                    poster_path: "/iQBIXJprC8AN7Jwx7aOI0gPUqff.jpg"
+                    is_movie: true
+                    in_list: true
+                    user_movie_id: 36
+                    status: watched
+                    rating: 4
+                    notes:
+                    progress_notes:
+                    overview: Taking place after alien crafts land around the world,
+                      an expert linguist is recruited by the military to determine
+                      whether they come in peace or are a threat.
+                    popularity: 11.666
+                    adult: false
+                    backdrop_path: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                    genre_ids:
+                    - 18
+                    - 878
+                    - 9648
+                    original_language: en
+                    original_title: Arrival
+                    video: false
+                    vote_average: 7.623
+                    vote_count: 18910
+                  - id:
+                    tmdb_id: 603
+                    title: The Matrix
+                    release_date: '1999-03-31'
+                    poster_path: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                    is_movie: true
+                    in_list: false
+                    user_movie_id:
+                    overview: A computer hacker learns from mysterious rebels about
+                      the true nature of his reality and his role in the war against
+                      its controllers.
+                    popularity: 85.5
+                    adult: false
+                    backdrop_path: "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg"
+                    genre_ids:
+                    - 28
+                    - 878
+                    original_language: en
+                    original_title: The Matrix
+                    video: false
+                    vote_average: 8.7
+                    vote_count: 25000
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to fetch movies
+                  details:
+                    type: string
+                    description: Error details
+                    example: Connection timeout
+                required:
+                - error
+  "/movies/{id}":
+    get:
+      summary: Get movie by database ID
+      tags:
+      - Movies
+      description: Get a movie or TV show by its database ID. Returns enriched data
+        with user-specific information (in_list, status, rating, etc.).
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Database ID of the movie
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Movie retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movie:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Database ID
+                        example: 1
+                      tmdb_id:
+                        type: integer
+                        description: TMDB (The Movie Database) ID
+                        example: 603
+                      title:
+                        type: string
+                        description: Movie or TV show title
+                        example: The Matrix
+                      release_date:
+                        type: string
+                        format: date
+                        nullable: true
+                        description: Release date (movies) or first air date (TV shows)
+                        example: '1999-03-31'
+                      poster_path:
+                        type: string
+                        nullable: true
+                        description: Poster image path/URL
+                        example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                      is_movie:
+                        type: boolean
+                        description: True if movie, false if TV show
+                        example: true
+                      in_list:
+                        type: boolean
+                        description: Whether this movie/show is in the user's list
+                        example: false
+                      user_movie_id:
+                        type: integer
+                        nullable: true
+                        description: User movie association ID (if in_list is true)
+                        example: 5
+                      status:
+                        type: string
+                        nullable: true
+                        description: User watch status (to_watch, watching, watched)
+                          if in_list is true, otherwise TMDB release status (e.g.,
+                          "Released", "Post Production")
+                        example: to_watch
+                      tmdb_status:
+                        type: string
+                        nullable: true
+                        description: TMDB release status (e.g., "Released", "Post
+                          Production") - only present when movie is not in user list
+                        example: Released
+                      rating:
+                        type: integer
+                        nullable: true
+                        description: User rating (only present if in_list is true)
+                        example: 5
+                      notes:
+                        type: string
+                        nullable: true
+                        description: User notes (only present if in_list is true)
+                        example: Great movie!
+                      progress_notes:
+                        type: string
+                        nullable: true
+                        description: Progress notes for TV shows (only present if
+                          in_list is true)
+                        example: On season 2, episode 4
+                      overview:
+                        type: string
+                        nullable: true
+                        description: Plot overview/synopsis
+                        example: A computer hacker learns about the true nature of
+                          reality...
+                      popularity:
+                        type: number
+                        description: Popularity score from TMDB
+                        example: 85.5
+                      adult:
+                        type: boolean
+                        description: Whether the content is marked as adult
+                        example: false
+                      backdrop_path:
+                        type: string
+                        nullable: true
+                        description: Backdrop image path/URL
+                        example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                      genre_ids:
+                        type: array
+                        items:
+                          type: integer
+                        description: Array of genre IDs from TMDB
+                        example:
+                        - 18
+                        - 878
+                        - 9648
+                      original_language:
+                        type: string
+                        nullable: true
+                        description: Original language code (e.g., "en", "es")
+                        example: en
+                      original_title:
+                        type: string
+                        nullable: true
+                        description: Original title (may differ from localized title)
+                        example: Arrival
+                      video:
+                        type: boolean
+                        description: Whether the content has video (typically false
+                          for movies)
+                        example: false
+                      vote_average:
+                        type: number
+                        description: Average vote rating from TMDB
+                        example: 7.623
+                      vote_count:
+                        type: integer
+                        description: Number of votes on TMDB
+                        example: 18910
+                required:
+                - movie
+                example:
+                  movie:
+                    id: 1
+                    tmdb_id: 603
+                    title: The Matrix
+                    release_date: '1999-03-31'
+                    poster_path: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                    is_movie: true
+                    in_list: true
+                    user_movie_id: 5
+                    status: watched
+                    rating: 5
+                    notes: One of my favorites!
+                    progress_notes:
+                    overview: A computer hacker learns from mysterious rebels about
+                      the true nature of his reality and his role in the war against
+                      its controllers.
+                    popularity: 85.5
+                    adult: false
+                    backdrop_path: "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg"
+                    genre_ids:
+                    - 28
+                    - 878
+                    original_language: en
+                    original_title: The Matrix
+                    video: false
+                    vote_average: 8.7
+                    vote_count: 25000
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
+        '404':
+          description: Movie not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Movie not found
+                required:
+                - error
+  "/user_movies":
+    post:
+      summary: Create or update a user movie
+      tags:
+      - User Movies
+      description: Add a movie or TV show to the user's list, or update an existing
+        entry. If a user_movie with the same movie_id already exists for the user,
+        it will be updated. Otherwise, a new user_movie is created. Returns enriched
+        movie data with user-specific fields.
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: User movie created or updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_movie:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Database ID
+                        example: 1
+                      tmdb_id:
+                        type: integer
+                        description: TMDB (The Movie Database) ID
+                        example: 603
+                      title:
+                        type: string
+                        description: Movie or TV show title
+                        example: The Matrix
+                      release_date:
+                        type: string
+                        format: date
+                        nullable: true
+                        description: Release date (movies) or first air date (TV shows)
+                        example: '1999-03-31'
+                      poster_path:
+                        type: string
+                        nullable: true
+                        description: Poster image path/URL
+                        example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                      is_movie:
+                        type: boolean
+                        description: True if movie, false if TV show
+                        example: true
+                      in_list:
+                        type: boolean
+                        description: Whether this movie/show is in the user's list
+                          (always true for this endpoint)
+                        example: true
+                      user_movie_id:
+                        type: integer
+                        description: User movie association ID
+                        example: 5
+                      status:
+                        type: string
+                        nullable: true
+                        enum:
+                        - to_watch
+                        - watching
+                        - watched
+                        description: User watch status
+                        example: to_watch
+                      rating:
+                        type: integer
+                        nullable: true
+                        description: User rating
+                        example: 5
+                      notes:
+                        type: string
+                        nullable: true
+                        description: User notes
+                        example: Great movie!
+                      progress_notes:
+                        type: string
+                        nullable: true
+                        description: Progress notes for TV shows
+                        example: On season 2, episode 4
+                      overview:
+                        type: string
+                        nullable: true
+                        description: Plot overview/synopsis
+                        example: A computer hacker learns about the true nature of
+                          reality...
+                      popularity:
+                        type: number
+                        nullable: true
+                        description: Popularity score from TMDB
+                        example: 85.5
+                      adult:
+                        type: boolean
+                        nullable: true
+                        description: Whether the content is marked as adult
+                        example: false
+                      backdrop_path:
+                        type: string
+                        nullable: true
+                        description: Backdrop image path/URL
+                        example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                      genre_ids:
+                        type: array
+                        items:
+                          type: integer
+                        nullable: true
+                        description: Array of genre IDs from TMDB
+                        example:
+                        - 18
+                        - 878
+                        - 9648
+                      original_language:
+                        type: string
+                        nullable: true
+                        description: Original language code
+                        example: en
+                      original_title:
+                        type: string
+                        nullable: true
+                        description: Original title
+                        example: The Matrix
+                      video:
+                        type: boolean
+                        nullable: true
+                        description: Whether the content has video
+                        example: false
+                      vote_average:
+                        type: number
+                        nullable: true
+                        description: Average vote rating from TMDB
+                        example: 7.623
+                      vote_count:
+                        type: integer
+                        nullable: true
+                        description: Number of votes on TMDB
+                        example: 18910
+                required:
+                - user_movie
+                example:
+                  user_movie:
+                    id: 1
+                    tmdb_id: 603
+                    title: The Matrix
+                    release_date: '1999-03-31'
+                    poster_path: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                    is_movie: true
+                    in_list: true
+                    user_movie_id: 5
+                    status: watched
+                    rating: 5
+                    notes: One of my favorites!
+                    progress_notes:
+                    overview: A computer hacker learns from mysterious rebels about
+                      the true nature of his reality.
+                    popularity: 85.5
+                    adult: false
+                    backdrop_path: "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg"
+                    genre_ids:
+                    - 28
+                    - 878
+                    original_language: en
+                    original_title: The Matrix
+                    video: false
+                    vote_average: 8.7
+                    vote_count: 25000
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                description: ActiveModel::Errors format - errors are keyed by field
+                  name
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+                example:
+                  movie:
+                  - must exist
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                movie_id:
+                  type: integer
+                  description: Database ID of the movie
+                  example: 1
+                status:
+                  type: string
+                  enum:
+                  - to_watch
+                  - watching
+                  - watched
+                  nullable: true
+                  description: Watch status
+                  example: to_watch
+                rating:
+                  type: integer
+                  nullable: true
+                  description: User rating (typically 1-5)
+                  example: 5
+                notes:
+                  type: string
+                  nullable: true
+                  description: User notes about the movie/show
+                  example: Great movie!
+                progress_notes:
+                  type: string
+                  nullable: true
+                  description: Progress notes for TV shows (e.g., "On season 2, episode
+                    4")
+                  example: On season 2, episode 4
+              required:
+              - movie_id
+    get:
+      summary: List user movies
+      tags:
+      - User Movies
+      description: Get the current user's movie/TV show list. Returns enriched movie
+        data with user-specific fields (status, rating, notes, progress_notes). All
+        items have in_list true.
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: User movies list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_movies:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Database ID
+                          example: 1
+                        tmdb_id:
+                          type: integer
+                          description: TMDB (The Movie Database) ID
+                          example: 603
+                        title:
+                          type: string
+                          description: Movie or TV show title
+                          example: The Matrix
+                        release_date:
+                          type: string
+                          format: date
+                          nullable: true
+                          description: Release date (movies) or first air date (TV
+                            shows)
+                          example: '1999-03-31'
+                        poster_path:
+                          type: string
+                          nullable: true
+                          description: Poster image path/URL
+                          example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                        is_movie:
+                          type: boolean
+                          description: True if movie, false if TV show
+                          example: true
+                        in_list:
+                          type: boolean
+                          description: Whether this movie/show is in the user's list
+                            (always true for this endpoint)
+                          example: true
+                        user_movie_id:
+                          type: integer
+                          description: User movie association ID
+                          example: 5
+                        status:
+                          type: string
+                          nullable: true
+                          enum:
+                          - to_watch
+                          - watching
+                          - watched
+                          description: User watch status
+                          example: to_watch
+                        rating:
+                          type: integer
+                          nullable: true
+                          description: User rating
+                          example: 5
+                        notes:
+                          type: string
+                          nullable: true
+                          description: User notes
+                          example: Great movie!
+                        progress_notes:
+                          type: string
+                          nullable: true
+                          description: Progress notes for TV shows
+                          example: On season 2, episode 4
+                        overview:
+                          type: string
+                          nullable: true
+                          description: Plot overview/synopsis
+                          example: A computer hacker learns about the true nature
+                            of reality...
+                        popularity:
+                          type: number
+                          nullable: true
+                          description: Popularity score from TMDB
+                          example: 85.5
+                        adult:
+                          type: boolean
+                          nullable: true
+                          description: Whether the content is marked as adult
+                          example: false
+                        backdrop_path:
+                          type: string
+                          nullable: true
+                          description: Backdrop image path/URL
+                          example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+                        genre_ids:
+                          type: array
+                          items:
+                            type: integer
+                          nullable: true
+                          description: Array of genre IDs from TMDB
+                          example:
+                          - 18
+                          - 878
+                          - 9648
+                        original_language:
+                          type: string
+                          nullable: true
+                          description: Original language code
+                          example: en
+                        original_title:
+                          type: string
+                          nullable: true
+                          description: Original title
+                          example: The Matrix
+                        video:
+                          type: boolean
+                          nullable: true
+                          description: Whether the content has video
+                          example: false
+                        vote_average:
+                          type: number
+                          nullable: true
+                          description: Average vote rating from TMDB
+                          example: 7.623
+                        vote_count:
+                          type: integer
+                          nullable: true
+                          description: Number of votes on TMDB
+                          example: 18910
+                required:
+                - user_movies
+                example:
+                  user_movies:
+                  - id: 1
+                    tmdb_id: 603
+                    title: The Matrix
+                    release_date: '1999-03-31'
+                    poster_path: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+                    is_movie: true
+                    in_list: true
+                    user_movie_id: 5
+                    status: watched
+                    rating: 5
+                    notes: One of my favorites!
+                    progress_notes:
+                    overview: A computer hacker learns from mysterious rebels about
+                      the true nature of his reality.
+                    popularity: 85.5
+                    adult: false
+                    backdrop_path: "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg"
+                    genre_ids:
+                    - 28
+                    - 878
+                    original_language: en
+                    original_title: The Matrix
+                    video: false
+                    vote_average: 8.7
+                    vote_count: 25000
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
+  "/user_movies/{id}":
+    delete:
+      summary: Delete a user movie
+      tags:
+      - User Movies
+      description: Remove a movie or TV show from the user's list by deleting the
+        user_movie association.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User movie association ID
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: User movie deleted successfully
+        '404':
+          description: User movie not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User movie not found
+                required:
+                - error
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
+  "/users/password":
+    post:
+      summary: Request password reset
+      tags:
+      - Authentication
+      description: Request password reset instructions. Sends an email with reset
+        link to the user.
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: Password reset instructions sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset instructions sent to your email
+                required:
+                - message
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Email not found
+                required:
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                      description: User email address
+                  required:
+                  - email
+              required:
+              - user
+        required: true
+    patch:
+      summary: Reset password with token
+      tags:
+      - Authentication
+      description: Reset password using the token from the reset email. Token is included
+        in the reset link sent via email.
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: Password successfully reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password successfully reset
+                required:
+                - message
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Reset password token is invalid
+                    - Password is too short (minimum is 6 characters)
+                    - Password confirmation doesn't match Password
+                required:
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    reset_password_token:
+                      type: string
+                      example: abc123def456
+                      description: Token from password reset email link
+                    password:
+                      type: string
+                      format: password
+                      example: newpassword123
+                      description: New password
+                      minLength: 6
+                    password_confirmation:
+                      type: string
+                      format: password
+                      example: newpassword123
+                      description: Password confirmation (must match password)
+                      minLength: 6
+                  required:
+                  - reset_password_token
+                  - password
+                  - password_confirmation
+              required:
+              - user
+        required: true
+  "/users":
+    post:
+      summary: Create a new user account
+      tags:
+      - Authentication
+      description: Register a new user account. Returns user data and JWT token in
+        Authorization header.
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Signed up successfully
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      email:
+                        type: string
+                        format: email
+                        example: user@example.com
+                      created_at:
+                        type: string
+                        format: date_time
+                        example: '2024-01-01T00:00:00.000Z'
+                      updated_at:
+                        type: string
+                        format: date_time
+                        example: '2024-01-01T00:00:00.000Z'
+                      jti:
+                        type: string
+                        example: abc123def456
+                required:
+                - status
+                - message
+                - data
+                example:
+                  status: 200
+                  message: Signed up successfully
+                  data:
+                    id: 1
+                    email: user@example.com
+                    created_at: '2024-01-01T00:00:00.000Z'
+                    updated_at: '2024-01-01T00:00:00.000Z'
+                    jti: abc123def456
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: User could not be created.
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Email has already been taken
+                    - Password is too short (minimum is 6 characters)
+                required:
+                - status
+                - message
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                      description: User email address
+                    password:
+                      type: string
+                      format: password
+                      example: password123
+                      description: User password (minimum length may apply)
+                      minLength: 6
+                  required:
+                  - email
+                  - password
+              required:
+              - user
+        required: true
+  "/users/sign_in":
+    post:
+      summary: Sign in
+      tags:
+      - Authentication
+      description: Authenticate user with email and password. Returns user data and
+        JWT in Authorization header.
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: User signed in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User signed in successfully
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      email:
+                        type: string
+                        format: email
+                        example: user@example.com
+                      created_at:
+                        type: string
+                        format: date_time
+                        example: '2024-01-01T00:00:00.000Z'
+                      updated_at:
+                        type: string
+                        format: date_time
+                        example: '2024-01-01T00:00:00.000Z'
+                      jti:
+                        type: string
+                        example: abc123def456
+                required:
+                - status
+                - message
+                - data
+                example:
+                  status: 200
+                  message: User signed in successfully
+                  data:
+                    id: 1
+                    email: user@example.com
+                    created_at: '2024-01-01T00:00:00.000Z'
+                    updated_at: '2024-01-01T00:00:00.000Z'
+                    jti: abc123def456
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid Email or password.
+                    description: Error message (e.g. invalid credentials or unauthenticated)
+                  message:
+                    type: string
+                    description: Additional i18n message when present
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                      description: User email address
+                    password:
+                      type: string
+                      format: password
+                      example: password123
+                      description: User password
+                  required:
+                  - email
+                  - password
+              required:
+              - user
+        required: true
+  "/me":
+    get:
+      summary: Get current user
+      tags:
+      - Authentication
+      description: Get the currently authenticated user information. Requires valid
+        JWT token in Authorization header.
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: '1'
+                      type:
+                        type: string
+                        example: user
+                      attributes:
+                        type: object
+                        properties:
+                          email:
+                            type: string
+                            format: email
+                            example: user@example.com
+                          created_at:
+                            type: string
+                            format: date_time
+                            example: '2024-01-01T00:00:00.000Z'
+                required:
+                - data
+                example:
+                  data:
+                    id: '1'
+                    type: user
+                    attributes:
+                      email: user@example.com
+                      created_at: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                    description: Error message when authentication fails
+                required:
+                - error
+  "/users/sign_out":
+    delete:
+      summary: Sign out
+      tags:
+      - Authentication
+      description: Sign out the current user. Invalidates the JWT token. Works even
+        if token is expired.
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Signed out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Signed out successfully
+                required:
+                - status
+                - message
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: No token provided
+                required:
+                - status
+                - message
+servers:
+- url: http://localhost:3000
+  description: Development server
+- url: https://whatamiwatching.info
+  description: Production server
+tags:
+- name: Authentication
+  description: User registration, sign in/out, password reset, and current user
+- name: Movies
+  description: Search, popular, details, create, and fetch movies/TV shows by ID
+- name: User Movies
+  description: List, add, and remove movies/shows from the user's watchlist
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'JWT token obtained from POST /users/sign_in endpoint. Include
+        the token in the Authorization header as: Bearer {token}'
+  schemas:
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Database ID
+          nullable: true
+          example: 1
+        tmdb_id:
+          type: integer
+          description: TMDB (The Movie Database) ID
+          example: 603
+        title:
+          type: string
+          description: Movie or TV show title
+          example: The Matrix
+        release_date:
+          type: string
+          format: date
+          nullable: true
+          description: Release date (movies) or first air date (TV shows)
+          example: '1999-03-31'
+        poster_path:
+          type: string
+          nullable: true
+          description: Poster image path/URL
+          example: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+        is_movie:
+          type: boolean
+          description: True if movie, false if TV show
+          example: true
+        in_list:
+          type: boolean
+          description: Whether this movie/show is in the user's list
+          example: false
+        user_movie_id:
+          type: integer
+          nullable: true
+          description: User movie association ID (if in_list is true)
+          example: 5
+        status:
+          type: string
+          nullable: true
+          description: User watch status (to_watch, watching, watched) if in_list
+            is true, otherwise TMDB release status
+          example: to_watch
+        tmdb_status:
+          type: string
+          nullable: true
+          description: TMDB release status (e.g., "Released", "Post Production") -
+            only present when movie is not in user list
+          example: Released
+        rating:
+          type: integer
+          nullable: true
+          description: User rating (only present if in_list is true)
+          example: 5
+        notes:
+          type: string
+          nullable: true
+          description: User notes (only present if in_list is true)
+          example: Great movie!
+        progress_notes:
+          type: string
+          nullable: true
+          description: Progress notes for TV shows (only present if in_list is true)
+          example: On season 2, episode 4
+        overview:
+          type: string
+          nullable: true
+          description: Plot overview/synopsis
+          example: A computer hacker learns about the true nature of reality...
+        popularity:
+          type: number
+          nullable: true
+          description: Popularity score from TMDB
+          example: 85.5
+        adult:
+          type: boolean
+          nullable: true
+          description: Whether the content is marked as adult
+          example: false
+        backdrop_path:
+          type: string
+          nullable: true
+          description: Backdrop image path/URL
+          example: "/r8FD6CC3GgjWaGVkZh00AcedfpA.jpg"
+        genre_ids:
+          type: array
+          items:
+            type: integer
+          nullable: true
+          description: Array of genre IDs from TMDB
+          example:
+          - 18
+          - 878
+          - 9648
+        original_language:
+          type: string
+          nullable: true
+          description: Original language code (e.g., "en", "es")
+          example: en
+        original_title:
+          type: string
+          nullable: true
+          description: Original title (may differ from localized title)
+          example: Arrival
+        video:
+          type: boolean
+          nullable: true
+          description: Whether the content has video (typically false for movies)
+          example: false
+        vote_average:
+          type: number
+          nullable: true
+          description: Average vote rating from TMDB
+          example: 7.623
+        vote_count:
+          type: integer
+          nullable: true
+          description: Number of votes on TMDB
+          example: 18910
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User ID
+          example: 1
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: user@example.com
+        created_at:
+          type: string
+          format: date_time
+          description: Account creation timestamp
+          example: '2024-01-01T00:00:00.000Z'
+        updated_at:
+          type: string
+          format: date_time
+          description: Last update timestamp
+          example: '2024-01-01T00:00:00.000Z'
+        jti:
+          type: string
+          description: JWT ID for token management
+          example: abc123
+      required:
+      - id
+      - email
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: An error occurred
+        details:
+          type: string
+          nullable: true
+          description: Additional error details
+          example: More specific error information
+      required:
+      - error
+    ValidationErrors:
+      type: object
+      description: ActiveModel::Errors format - errors are keyed by field name
+      additionalProperties:
+        type: array
+        items:
+          type: string
+      example:
+        field_name:
+        - error message 1
+        - error message 2

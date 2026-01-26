@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  if defined?(Rswag::Ui::Engine) && defined?(Rswag::Api::Engine)
+    mount Rswag::Ui::Engine => "/api-docs"
+    mount Rswag::Api::Engine => "/api-docs"
+  end
+
   resources :movies, only: [ :index, :show, :create ] do
     collection do
       get :search

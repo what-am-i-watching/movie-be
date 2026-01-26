@@ -18,15 +18,20 @@ class MoviesController < ApplicationController
       @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
       render json: { movie: @enriched_movie }, status: :ok
     else
-      @movie = Movie.create(movie_params)
+      @movie = Movie.new(movie_params)
 
-      if @movie.persisted?
+      if @movie.save
         @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
         render json: { movie: @enriched_movie }, status: :created
       else
-        render json: @movie.errors, status: :unprocessable_entity
+        render json: { errors: @movie.errors.full_messages }, status: :unprocessable_entity
       end
     end
+  rescue ActiveRecord::RecordNotUnique
+    # Handle race condition: another request created the movie between find_by and create
+    @movie = Movie.find_by(tmdb_id: movie_params[:tmdb_id])
+    @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie, current_user)
+    render json: { movie: @enriched_movie }, status: :ok
   end
 
   def search
@@ -60,29 +65,33 @@ class MoviesController < ApplicationController
     @enriched_movies = MovieDataEnricher.enrich_collection(@movies, current_user)
 
     render json: { movies: @enriched_movies }, status: :ok
+  rescue StandardError => e
+    # TODO: Test error handling for the API call
+    Rails.logger.error "MovieService API Error: #{e.message}"
+    render json: { error: "Failed to fetch movies", details: e.message }, status: :internal_server_error
   end
 
   def details
-    if params[:tmdb_id].present?
-      # debugger
-      is_movie = params[:is_movie] != "false"
-      @movie_data = MovieService.movie_details(params[:tmdb_id], is_movie: is_movie)
+    tmdb_id = params[:tmdb_id]
+    return render json: { error: "tmdb_id parameter is required" }, status: :bad_request if tmdb_id.blank?
 
-      if @movie_data[:error]
-        render json: { error: @movie_data[:error] }, status: :unprocessable_entity
-        return
-      end
+    # Parse is_movie: defaults to true unless explicitly "false"
+    is_movie = params[:is_movie].to_s.downcase != "false"
 
-      @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie_data, current_user)
+    @movie_data = MovieService.movie_details(tmdb_id, is_movie: is_movie)
 
-      unless @enriched_movie.key?(:is_movie)
-        @enriched_movie[:is_movie] = @enriched_movie.key?(:original_title) || is_movie
-      end
-
-      render json: { movie: @enriched_movie }, status: :ok
-    else
-      render json: { error: "tmdb_id parameter is required" }, status: :bad_request
+    if @movie_data[:error]
+      return render json: { error: @movie_data[:error] }, status: :unprocessable_entity
     end
+
+    @enriched_movie = MovieDataEnricher.enrich_with_user_data(@movie_data, current_user)
+
+    # Ensure is_movie is set if not already determined
+    unless @enriched_movie.key?(:is_movie)
+      @enriched_movie[:is_movie] = @enriched_movie.key?(:original_title) || is_movie
+    end
+
+    render json: { movie: @enriched_movie }, status: :ok
   rescue StandardError => e
     Rails.logger.error "MovieService API Error: #{e.message}"
     render json: { error: "Failed to fetch movie details", details: e.message }, status: :internal_server_error
@@ -91,6 +100,6 @@ class MoviesController < ApplicationController
   private
 
   def movie_params
-    params.expect(movie: [ :title, :tmdb_id, :release_year, :poster_url, :is_movie ])
+    params.expect(movie: [ :title, :tmdb_id, :release_date, :poster_url, :is_movie ])
   end
 end

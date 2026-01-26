@@ -34,6 +34,11 @@ class MovieDataEnricher
       end
     end
 
+    # Handle TMDB's status field (e.g., "Released") - rename it to avoid conflict with user watch status
+    if movie_hash.key?(:status) && !movie_hash[:status].in?([ "to_watch", "watching", "watched" ])
+      movie_hash[:tmdb_status] = movie_hash.delete(:status)
+    end
+
     if db_movie
       user_movie = user.user_movies.find_by(movie_id: db_movie.id)
       if user_movie
@@ -46,10 +51,14 @@ class MovieDataEnricher
       else
         movie_hash[:in_list] = false
         movie_hash[:user_movie_id] = nil
+        # Remove status if it's not a user watch status (should already be handled above, but be safe)
+        movie_hash.delete(:status) unless movie_hash[:status].in?([ "to_watch", "watching", "watched" ])
       end
     else
       movie_hash[:in_list] = false
       movie_hash[:user_movie_id] = nil
+      # Remove status if it's not a user watch status (should already be handled above, but be safe)
+      movie_hash.delete(:status) unless movie_hash[:status].in?([ "to_watch", "watching", "watched" ])
     end
 
     # Set is_movie flag if not already set
