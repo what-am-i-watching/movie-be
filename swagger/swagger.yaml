@@ -583,6 +583,18 @@ paths:
                     video: false
                     vote_average: 8.7
                     vote_count: 25000
+        '400':
+          description: Bad request - missing tmdb_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: tmdb_id parameter is required
+                required:
+                - error
         '401':
           description: Unauthorized
           content:

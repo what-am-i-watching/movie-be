@@ -275,7 +275,8 @@ RSpec.describe 'Movies::Search', type: :request do
             },
             details: {
               type: :string,
-              description: 'Error details',
+              nullable: true,
+              description: 'Error details (only present in development environment)',
               example: 'Connection timeout'
             }
           },
@@ -298,7 +299,8 @@ RSpec.describe 'Movies::Search', type: :request do
           data = JSON.parse(response.body)
           expect(response).to have_http_status(:internal_server_error)
           expect(data['error']).to eq('Failed to fetch movies')
-          expect(data['details']).to be_present
+          # details is only present in development, nil in test/production
+          expect(data.key?('details')).to be true
         end
       end
     end
