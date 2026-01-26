@@ -23,6 +23,25 @@ class UserMoviesController < ApplicationController
     render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 
+  def update
+    user_movie = current_user.user_movies.find(params[:id])
+    user_movie.assign_attributes(user_movie_params)
+
+    if user_movie.save
+      enriched_movie = MovieDataEnricher.enrich_with_user_data(user_movie.movie, current_user)
+      render json: { user_movie: enriched_movie }, status: :ok
+    else
+      render json: { errors: user_movie.errors.full_messages }, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "User movie not found" }, status: :not_found
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+  rescue ArgumentError => e
+    # Handle invalid enum values (e.g., invalid status)
+    render json: { errors: [ e.message ] }, status: :unprocessable_entity
+  end
+
   def destroy
     user_movie = current_user.user_movies.find(params[:id])
     user_movie.destroy
