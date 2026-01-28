@@ -7,7 +7,7 @@ gem "pg", "~> 1.1"
 
 # Fix OpenSSL certificate verification issue on Ruby 3.4.x
 # See: https://www.rubyonmac.dev/certificate-verify-failed-unable-to-get-certificate-crl-openssl-ssl-sslerror
-gem "openssl", "~> 3.3.1"
+gem "openssl", "~> 4.0.0"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
