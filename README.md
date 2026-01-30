@@ -2,7 +2,7 @@
 
 REST API for managing movies and TV shows watchlists.
 
-Deployed app can be found at (whatamiwatching.info/)[https://whatamiwatching.info/]
+Deployed app can be found at [whatamiwatching.info](https://whatamiwatching.info/)
 
 ## Getting Started
 
