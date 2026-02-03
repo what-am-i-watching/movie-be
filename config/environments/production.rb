@@ -65,11 +65,11 @@ Rails.application.configure do
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   config.action_mailer.smtp_settings = {
-    address: "smtp.sendgrid.net",
+    address: "smtp-relay.brevo.com",
     port: 587,
     domain: "whatamiwatching.info",
-    user_name: "apikey",
-    password: ENV["SENDGRID_API_KEY"],
+    user_name: ENV["BREVO_STMP_USERNAME"],
+    password: ENV["BREVO_STMP_API_KEY"],
     authentication: :plain,
     enable_starttls_auto: true
   }
