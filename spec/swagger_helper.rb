@@ -233,7 +233,7 @@ RSpec.configure do |config|
               details: {
                 type: :string,
                 nullable: true,
-                description: 'Additional error details',
+                description: 'Error details (only present in development environment)',
                 example: 'More specific error information'
               }
             },
