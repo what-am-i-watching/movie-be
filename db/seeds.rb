@@ -95,14 +95,13 @@ end
 UserMovie.find_or_create_by!(user: user1, movie: Movie.find_by(tmdb_id: 27205)) do |um|
   um.status = :watching
   um.rating = nil
-  um.progress_notes = 'Need to finish this'
+  um.notes = 'Need to finish this'
 end
 
 UserMovie.find_or_create_by!(user: user1, movie: Movie.find_by(tmdb_id: 1396)) do |um|
   um.status = :watched
   um.rating = 5
   um.notes = 'Best TV show ever!'
-  um.progress_notes = 'Finished all seasons'
 end
 
 UserMovie.find_or_create_by!(user: user1, movie: Movie.find_by(tmdb_id: 1399)) do |um|
@@ -128,7 +127,6 @@ UserMovie.find_or_create_by!(user: user2, movie: Movie.find_by(tmdb_id: 1396)) d
   um.status = :watching
   um.rating = nil
   um.notes = 'On season 3'
-  um.progress_notes = 'On season 3, episode 5'
 end
 
 puts "Created user movies: #{UserMovie.count}"

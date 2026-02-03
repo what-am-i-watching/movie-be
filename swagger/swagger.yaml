@@ -96,12 +96,6 @@ paths:
                         nullable: true
                         description: User notes (only present if in_list is true)
                         example: Great movie!
-                      progress_notes:
-                        type: string
-                        nullable: true
-                        description: Progress notes for TV shows (only present if
-                          in_list is true)
-                        example: On season 2, episode 4
                       overview:
                         type: string
                         nullable: true
@@ -169,7 +163,6 @@ paths:
                     tmdb_status: Released
                     rating:
                     notes:
-                    progress_notes:
                     overview: A computer hacker learns from mysterious rebels about
                       the true nature of his reality and his role in the war against
                       its controllers.
@@ -253,12 +246,6 @@ paths:
                         nullable: true
                         description: User notes (only present if in_list is true)
                         example: Great movie!
-                      progress_notes:
-                        type: string
-                        nullable: true
-                        description: Progress notes for TV shows (only present if
-                          in_list is true)
-                        example: On season 2, episode 4
                       overview:
                         type: string
                         nullable: true
@@ -326,7 +313,6 @@ paths:
                     tmdb_status: Released
                     rating:
                     notes:
-                    progress_notes:
                     overview: A computer hacker learns from mysterious rebels about
                       the true nature of his reality and his role in the war against
                       its controllers.
@@ -500,12 +486,6 @@ paths:
                         nullable: true
                         description: User notes (only present if in_list is true)
                         example: Great movie!
-                      progress_notes:
-                        type: string
-                        nullable: true
-                        description: Progress notes for TV shows (only present if
-                          in_list is true)
-                        example: On season 2, episode 4
                       overview:
                         type: string
                         nullable: true
@@ -713,12 +693,6 @@ paths:
                           nullable: true
                           description: User notes (only present if in_list is true)
                           example: Great movie!
-                        progress_notes:
-                          type: string
-                          nullable: true
-                          description: Progress notes for TV shows (only present if
-                            in_list is true)
-                          example: On season 2, episode 4
                         overview:
                           type: string
                           nullable: true
@@ -805,7 +779,6 @@ paths:
                     status: watched
                     rating: 5
                     notes: One of my favorites!
-                    progress_notes:
                     overview: Framed in the 1940s for the double murder of his wife
                       and her lover, upstanding banker Andy Dufresne begins a new
                       life at the Shawshank prison.
@@ -935,12 +908,6 @@ paths:
                           nullable: true
                           description: User notes (only present if in_list is true)
                           example: Great movie!
-                        progress_notes:
-                          type: string
-                          nullable: true
-                          description: Progress notes for TV shows (only present if
-                            in_list is true)
-                          example: On season 2, episode 4
                         overview:
                           type: string
                           nullable: true
@@ -1008,7 +975,6 @@ paths:
                     status: watched
                     rating: 4
                     notes:
-                    progress_notes:
                     overview: Taking place after alien crafts land around the world,
                       an expert linguist is recruited by the military to determine
                       whether they come in peace or are a threat.
@@ -1161,12 +1127,6 @@ paths:
                         nullable: true
                         description: User notes (only present if in_list is true)
                         example: Great movie!
-                      progress_notes:
-                        type: string
-                        nullable: true
-                        description: Progress notes for TV shows (only present if
-                          in_list is true)
-                        example: On season 2, episode 4
                       overview:
                         type: string
                         nullable: true
@@ -1233,7 +1193,6 @@ paths:
                     status: watched
                     rating: 5
                     notes: One of my favorites!
-                    progress_notes:
                     overview: A computer hacker learns from mysterious rebels about
                       the true nature of his reality and his role in the war against
                       its controllers.
@@ -1350,11 +1309,6 @@ paths:
                         nullable: true
                         description: User notes
                         example: Great movie!
-                      progress_notes:
-                        type: string
-                        nullable: true
-                        description: Progress notes for TV shows
-                        example: On season 2, episode 4
                       overview:
                         type: string
                         nullable: true
@@ -1426,7 +1380,6 @@ paths:
                     status: watched
                     rating: 5
                     notes: One of my favorites!
-                    progress_notes:
                     overview: A computer hacker learns from mysterious rebels about
                       the true nature of his reality.
                     popularity: 85.5
@@ -1498,12 +1451,6 @@ paths:
                   nullable: true
                   description: User notes about the movie/show
                   example: Great movie!
-                progress_notes:
-                  type: string
-                  nullable: true
-                  description: Progress notes for TV shows (e.g., "On season 2, episode
-                    4")
-                  example: On season 2, episode 4
               required:
               - movie_id
     get:
@@ -1511,7 +1458,7 @@ paths:
       tags:
       - User Movies
       description: Get the current user's movie/TV show list. Returns enriched movie
-        data with user-specific fields (status, rating, notes, progress_notes). All
+        data with user-specific fields (status, rating, notes). All
         items have in_list true.
       security:
       - bearerAuth: []
@@ -1584,11 +1531,6 @@ paths:
                           nullable: true
                           description: User notes
                           example: Great movie!
-                        progress_notes:
-                          type: string
-                          nullable: true
-                          description: Progress notes for TV shows
-                          example: On season 2, episode 4
                         overview:
                           type: string
                           nullable: true
@@ -1660,7 +1602,6 @@ paths:
                     status: watched
                     rating: 5
                     notes: One of my favorites!
-                    progress_notes:
                     overview: A computer hacker learns from mysterious rebels about
                       the true nature of his reality.
                     popularity: 85.5
@@ -1771,11 +1712,6 @@ paths:
                         nullable: true
                         description: User notes
                         example: Really enjoying this!
-                      progress_notes:
-                        type: string
-                        nullable: true
-                        description: Progress notes for TV shows
-                        example: On season 2, episode 4
                       overview:
                         type: string
                         nullable: true
@@ -1847,7 +1783,6 @@ paths:
                     status: watching
                     rating: 4
                     notes: Really enjoying this!
-                    progress_notes:
                     overview: A computer hacker learns from mysterious rebels about
                       the true nature of his reality.
                     popularity: 85.5
@@ -1927,12 +1862,6 @@ paths:
                   nullable: true
                   description: User notes about the movie/show
                   example: Really enjoying this!
-                progress_notes:
-                  type: string
-                  nullable: true
-                  description: Progress notes for TV shows (e.g., "On season 2, episode
-                    4")
-                  example: On season 2, episode 4
     delete:
       summary: Delete a user movie
       tags:
@@ -2489,11 +2418,6 @@ components:
           nullable: true
           description: User notes (only present if in_list is true)
           example: Great movie!
-        progress_notes:
-          type: string
-          nullable: true
-          description: Progress notes for TV shows (only present if in_list is true)
-          example: On season 2, episode 4
         overview:
           type: string
           nullable: true

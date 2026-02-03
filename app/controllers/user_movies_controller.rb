@@ -53,6 +53,6 @@ class UserMoviesController < ApplicationController
   private
 
   def user_movie_params
-    params.expect(user_movie: [ :movie_id, :notes, :rating, :status, :progress_notes ])
+    params.expect(user_movie: [ :movie_id, :notes, :rating, :status ])
   end
 end

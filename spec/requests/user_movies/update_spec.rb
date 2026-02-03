@@ -36,12 +36,6 @@ RSpec.describe 'UserMovies::Update', type: :request do
             nullable: true,
             description: 'User notes about the movie/show',
             example: 'Really enjoying this!'
-          },
-          progress_notes: {
-            type: :string,
-            nullable: true,
-            description: 'Progress notes for TV shows (e.g., "On season 2, episode 4")',
-            example: 'On season 2, episode 4'
           }
         }
       }
@@ -113,12 +107,6 @@ RSpec.describe 'UserMovies::Update', type: :request do
                   nullable: true,
                   description: 'User notes',
                   example: 'Really enjoying this!'
-                },
-                progress_notes: {
-                  type: :string,
-                  nullable: true,
-                  description: 'Progress notes for TV shows',
-                  example: 'On season 2, episode 4'
                 },
                 overview: {
                   type: :string,
@@ -198,7 +186,6 @@ RSpec.describe 'UserMovies::Update', type: :request do
               status: 'watching',
               rating: 4,
               notes: 'Really enjoying this!',
-              progress_notes: nil,
               overview: 'A computer hacker learns from mysterious rebels about the true nature of his reality.',
               popularity: 85.5,
               adult: false,

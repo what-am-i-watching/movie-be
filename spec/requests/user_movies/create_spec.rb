@@ -37,12 +37,6 @@ RSpec.describe 'UserMovies::Create', type: :request do
             nullable: true,
             description: 'User notes about the movie/show',
             example: 'Great movie!'
-          },
-          progress_notes: {
-            type: :string,
-            nullable: true,
-            description: 'Progress notes for TV shows (e.g., "On season 2, episode 4")',
-            example: 'On season 2, episode 4'
           }
         },
         required: [ 'movie_id' ]
@@ -115,12 +109,6 @@ RSpec.describe 'UserMovies::Create', type: :request do
                   nullable: true,
                   description: 'User notes',
                   example: 'Great movie!'
-                },
-                progress_notes: {
-                  type: :string,
-                  nullable: true,
-                  description: 'Progress notes for TV shows',
-                  example: 'On season 2, episode 4'
                 },
                 overview: {
                   type: :string,
@@ -200,7 +188,6 @@ RSpec.describe 'UserMovies::Create', type: :request do
               status: 'watched',
               rating: 5,
               notes: 'One of my favorites!',
-              progress_notes: nil,
               overview: 'A computer hacker learns from mysterious rebels about the true nature of his reality.',
               popularity: 85.5,
               adult: false,
@@ -225,8 +212,7 @@ RSpec.describe 'UserMovies::Create', type: :request do
             movie_id: movie.id,
             status: 'watched',
             rating: 5,
-            notes: 'One of my favorites!',
-            progress_notes: nil
+            notes: 'One of my favorites!'
           }
         end
 

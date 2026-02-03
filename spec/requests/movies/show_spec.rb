@@ -88,12 +88,6 @@ RSpec.describe 'Movies::Show', type: :request do
                   description: 'User notes (only present if in_list is true)',
                   example: 'Great movie!'
                 },
-                progress_notes: {
-                  type: :string,
-                  nullable: true,
-                  description: 'Progress notes for TV shows (only present if in_list is true)',
-                  example: 'On season 2, episode 4'
-                },
                 overview: {
                   type: :string,
                   nullable: true,
@@ -166,7 +160,6 @@ RSpec.describe 'Movies::Show', type: :request do
               status: 'watched',
               rating: 5,
               notes: 'One of my favorites!',
-              progress_notes: nil,
               overview: 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.',
               popularity: 85.5,
               adult: false,

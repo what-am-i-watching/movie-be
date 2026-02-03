@@ -7,7 +7,7 @@ RSpec.describe 'UserMovies::Index', type: :request do
     get 'List user movies' do
       tags 'User Movies'
       produces 'application/json'
-      description 'Get the current user\'s movie/TV show list. Returns enriched movie data with user-specific fields (status, rating, notes, progress_notes). All items have in_list true.'
+      description 'Get the current user\'s movie/TV show list. Returns enriched movie data with user-specific fields (status, rating, notes). All items have in_list true.'
       security [ bearerAuth: [] ]
 
       response '200', 'User movies list' do
@@ -79,12 +79,6 @@ RSpec.describe 'UserMovies::Index', type: :request do
                     nullable: true,
                     description: 'User notes',
                     example: 'Great movie!'
-                  },
-                  progress_notes: {
-                    type: :string,
-                    nullable: true,
-                    description: 'Progress notes for TV shows',
-                    example: 'On season 2, episode 4'
                   },
                   overview: {
                     type: :string,
@@ -166,7 +160,6 @@ RSpec.describe 'UserMovies::Index', type: :request do
                 status: 'watched',
                 rating: 5,
                 notes: 'One of my favorites!',
-                progress_notes: nil,
                 overview: 'A computer hacker learns from mysterious rebels about the true nature of his reality.',
                 popularity: 85.5,
                 adult: false,

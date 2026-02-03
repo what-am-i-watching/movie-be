@@ -47,7 +47,6 @@ class MovieDataEnricher
         movie_hash[:status] = user_movie.status
         movie_hash[:rating] = user_movie.rating
         movie_hash[:notes] = user_movie.notes
-        movie_hash[:progress_notes] = user_movie.progress_notes
       else
         movie_hash[:in_list] = false
         movie_hash[:user_movie_id] = nil

@@ -125,12 +125,6 @@ RSpec.configure do |config|
                 description: 'User notes (only present if in_list is true)',
                 example: 'Great movie!'
               },
-              progress_notes: {
-                type: :string,
-                nullable: true,
-                description: 'Progress notes for TV shows (only present if in_list is true)',
-                example: 'On season 2, episode 4'
-              },
               overview: {
                 type: :string,
                 nullable: true,

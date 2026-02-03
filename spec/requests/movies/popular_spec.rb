@@ -82,12 +82,6 @@ RSpec.describe 'Movies::Popular', type: :request do
                     description: 'User notes (only present if in_list is true)',
                     example: 'Great movie!'
                   },
-                  progress_notes: {
-                    type: :string,
-                    nullable: true,
-                    description: 'Progress notes for TV shows (only present if in_list is true)',
-                    example: 'On season 2, episode 4'
-                  },
                   overview: {
                     type: :string,
                     nullable: true,
@@ -182,7 +176,6 @@ RSpec.describe 'Movies::Popular', type: :request do
                 status: 'watched',
                 rating: 5,
                 notes: 'One of my favorites!',
-                progress_notes: nil,
                 overview: 'Framed in the 1940s for the double murder of his wife and her lover, upstanding banker Andy Dufresne begins a new life at the Shawshank prison.',
                 popularity: 92.5,
                 adult: false,

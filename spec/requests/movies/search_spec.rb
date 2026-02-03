@@ -86,12 +86,6 @@ RSpec.describe 'Movies::Search', type: :request do
                     description: 'User notes (only present if in_list is true)',
                     example: 'Great movie!'
                   },
-                  progress_notes: {
-                    type: :string,
-                    nullable: true,
-                    description: 'Progress notes for TV shows (only present if in_list is true)',
-                    example: 'On season 2, episode 4'
-                  },
                   overview: {
                     type: :string,
                     nullable: true,
@@ -166,7 +160,6 @@ RSpec.describe 'Movies::Search', type: :request do
                 status: 'watched',
                 rating: 4,
                 notes: nil,
-                progress_notes: nil,
                 overview: 'Taking place after alien crafts land around the world, an expert linguist is recruited by the military to determine whether they come in peace or are a threat.',
                 popularity: 11.666,
                 adult: false,
