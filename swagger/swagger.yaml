@@ -563,18 +563,6 @@ paths:
                     video: false
                     vote_average: 8.7
                     vote_count: 25000
-        '400':
-          description: Bad request - missing tmdb_id parameter
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: tmdb_id parameter is required
-                required:
-                - error
         '401':
           description: Unauthorized
           content:
@@ -611,7 +599,8 @@ paths:
                     example: Failed to fetch movie details
                   details:
                     type: string
-                    description: Error details
+                    nullable: true
+                    description: Error details (only present in development environment)
                     example: Connection timeout
                 required:
                 - error
@@ -817,7 +806,8 @@ paths:
                     example: Failed to fetch movies
                   details:
                     type: string
-                    description: Error details
+                    nullable: true
+                    description: Error details (only present in development environment)
                     example: Connection timeout
                 required:
                 - error
@@ -1036,7 +1026,8 @@ paths:
                     example: Failed to fetch movies
                   details:
                     type: string
-                    description: Error details
+                    nullable: true
+                    description: Error details (only present in development environment)
                     example: Connection timeout
                 required:
                 - error
@@ -1394,7 +1385,7 @@ paths:
                     vote_average: 8.7
                     vote_count: 25000
         '422':
-          description: Validation errors
+          description: Validation errors (invalid rating)
           content:
             application/json:
               schema:
@@ -1409,7 +1400,7 @@ paths:
                 - errors
                 example:
                   errors:
-                  - Movie must exist
+                  - Rating must be less than or equal to 5
         '401':
           description: Unauthorized
           content:
@@ -1444,7 +1435,10 @@ paths:
                 rating:
                   type: integer
                   nullable: true
-                  description: User rating (typically 1-5)
+                  minimum: 0
+                  maximum: 5
+                  description: User rating from 0 to 5 (optional). Must be 0-5 when
+                    provided.
                   example: 5
                 notes:
                   type: string
@@ -1458,8 +1452,8 @@ paths:
       tags:
       - User Movies
       description: Get the current user's movie/TV show list. Returns enriched movie
-        data with user-specific fields (status, rating, notes). All
-        items have in_list true.
+        data with user-specific fields (status, rating, notes). All items have in_list
+        true.
       security:
       - bearerAuth: []
       responses:
@@ -1628,6 +1622,51 @@ paths:
                 required:
                 - error
   "/user_movies/{id}":
+    delete:
+      summary: Delete a user movie
+      tags:
+      - User Movies
+      description: Remove a movie or TV show from the user's list by deleting the
+        user_movie association.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User movie association ID
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: User movie deleted successfully
+        '404':
+          description: User movie not found (authorization check)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User movie not found
+                required:
+                - error
+                description: Returns 404 when user tries to delete another user's
+                  movie (authorization check)
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - error
     patch:
       summary: Update a user movie
       tags:
@@ -1672,8 +1711,7 @@ paths:
                         type: string
                         format: date
                         nullable: true
-                        description: Release date (movies) or first air date (TV
-                          shows)
+                        description: Release date (movies) or first air date (TV shows)
                         example: '1999-03-31'
                       poster_path:
                         type: string
@@ -1797,7 +1835,7 @@ paths:
                     vote_average: 8.7
                     vote_count: 25000
         '404':
-          description: User movie not found
+          description: User movie not found (authorization check)
           content:
             application/json:
               schema:
@@ -1808,8 +1846,10 @@ paths:
                     example: User movie not found
                 required:
                 - error
+                description: Returns 404 when user tries to update another user's
+                  movie (authorization check)
         '422':
-          description: Validation errors
+          description: Validation errors (invalid rating)
           content:
             application/json:
               schema:
@@ -1824,7 +1864,7 @@ paths:
                 - errors
                 example:
                   errors:
-                  - Status is not included in the list
+                  - Rating must be less than or equal to 5
         '401':
           description: Unauthorized
           content:
@@ -1855,56 +1895,16 @@ paths:
                 rating:
                   type: integer
                   nullable: true
-                  description: User rating (typically 1-5)
+                  minimum: 0
+                  maximum: 5
+                  description: User rating from 0 to 5 (optional). Must be 0-5 when
+                    provided.
                   example: 4
                 notes:
                   type: string
                   nullable: true
                   description: User notes about the movie/show
                   example: Really enjoying this!
-    delete:
-      summary: Delete a user movie
-      tags:
-      - User Movies
-      description: Remove a movie or TV show from the user's list by deleting the
-        user_movie association.
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: User movie association ID
-        example: 1
-        schema:
-          type: integer
-      responses:
-        '204':
-          description: User movie deleted successfully
-        '404':
-          description: User movie not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: User movie not found
-                required:
-                - error
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: You need to sign in or sign up before continuing.
-                required:
-                - error
   "/users/password":
     post:
       summary: Request password reset
@@ -2512,7 +2512,7 @@ components:
         details:
           type: string
           nullable: true
-          description: Additional error details
+          description: Error details (only present in development environment)
           example: More specific error information
       required:
       - error

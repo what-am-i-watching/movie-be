@@ -29,7 +29,9 @@ RSpec.describe 'UserMovies::Create', type: :request do
           rating: {
             type: :integer,
             nullable: true,
-            description: 'User rating (typically 1-5)',
+            minimum: 0,
+            maximum: 5,
+            description: 'User rating from 0 to 5 (optional). Must be 0-5 when provided.',
             example: 5
           },
           notes: {
@@ -229,7 +231,7 @@ RSpec.describe 'UserMovies::Create', type: :request do
         end
       end
 
-      response '422', 'Validation errors' do
+      response '422', 'Validation errors (movie not found)' do
         schema type: :object,
           properties: {
             errors: {
@@ -265,6 +267,45 @@ RSpec.describe 'UserMovies::Create', type: :request do
           expect(data['errors']).to be_present
           expect(data['errors']).to be_an(Array)
           expect(data['errors'].length).to be > 0
+        end
+      end
+
+      response '422', 'Validation errors (invalid rating)' do
+        schema type: :object,
+          properties: {
+            errors: {
+              type: :array,
+              items: { type: :string },
+              description: 'Array of validation error messages'
+            }
+          },
+          required: [ 'errors' ],
+          example: {
+            errors: [
+              "Rating must be less than or equal to 5"
+            ]
+          }
+
+        let(:Authorization) do
+          user = create_test_user(email: 'um-create-rating@example.com')
+          post '/users/sign_in', params: { user: { email: user.email, password: 'password123' } }
+          response.headers['Authorization']
+        end
+        let!(:movie) { create_test_movie(tmdb_id: 99998, title: 'Rating Test Movie', release_date: '2020-01-01') }
+        let(:user_movie) do
+          {
+            movie_id: movie.id,
+            status: 'to_watch',
+            rating: 6
+          }
+        end
+
+        run_test! do
+          data = JSON.parse(response.body)
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(data['errors']).to be_present
+          expect(data['errors']).to be_an(Array)
+          expect(data['errors'].any? { |e| e.include?('Rating') }).to be true
         end
       end
 
