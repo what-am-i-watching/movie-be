@@ -76,12 +76,15 @@ class MoviesController < ApplicationController
       return render json: { error: movie_data[:error] }, status: :unprocessable_entity
     end
 
+    watch_details = WatchService.watch_details(tmdb_id, is_movie: is_movie)
+    watch_options = WatchDetailsFormatter.format(watch_details)
+
     enriched_movie = MovieDataEnricher.enrich_with_user_data(movie_data, current_user)
 
     # Ensure is_movie is set if not already determined
     enriched_movie[:is_movie] ||= enriched_movie.key?(:original_title) || is_movie
 
-    render json: { movie: enriched_movie }, status: :ok
+    render json: { movie: enriched_movie, watch_options: watch_options }, status: :ok
   rescue StandardError => e
     handle_api_error(e, "Failed to fetch movie details")
   end
