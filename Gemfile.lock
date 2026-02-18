@@ -233,7 +233,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.0-x86_64-linux-musl)
       racc (~> 1.4)
-    openssl (3.3.2)
+    openssl (4.0.1)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
     overcommit (0.68.0)
@@ -460,7 +460,7 @@ DEPENDENCIES
   jsonapi-serializer
   kamal
   minitest
-  openssl (~> 3.3.1)
+  openssl (~> 4.0.1)
   overcommit
   pg (~> 1.1)
   puma (>= 5.0)
