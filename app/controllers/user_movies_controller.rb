@@ -3,7 +3,7 @@ class UserMoviesController < ApplicationController
 
   def index
     user_movies = current_user.user_movies.includes(:movie)
-    movies = user_movies.map(&:movie).compact
+    movies = user_movies.map(&:movie).compact.uniq(&:id)
     enriched_movies = movies.map { |movie| MovieDataEnricher.enrich_with_user_data(movie, current_user) }
 
     render json: { user_movies: enriched_movies }, status: :ok
