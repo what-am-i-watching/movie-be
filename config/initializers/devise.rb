@@ -27,7 +27,8 @@ Devise.setup do |config|
       [ "DELETE", %r{^/users/sign_out$} ]
     ]
 
-    jwt.expiration_time = 120.minutes.to_i
+    # Long-lived tokens for SPA: client keeps JWT in localStorage until sign-out.
+    jwt.expiration_time = 1.year.to_i
   end
 
   # ==> Controller configuration
