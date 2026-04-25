@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_03_191037) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_25_195000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,12 +50,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_191037) do
     t.datetime "created_at", null: false
     t.bigint "movie_id", null: false
     t.text "notes"
-    t.integer "rating"
+    t.decimal "rating", precision: 2, scale: 1
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["movie_id"], name: "index_user_movies_on_movie_id"
     t.index ["user_id"], name: "index_user_movies_on_user_id"
+    t.check_constraint "rating IS NULL OR rating >= 0::numeric AND rating <= 5::numeric AND mod(rating * 2::numeric, 1::numeric) = 0::numeric", name: "user_movies_rating_half_step_range_check"
   end
 
   create_table "users", force: :cascade do |t|

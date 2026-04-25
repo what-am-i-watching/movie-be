@@ -88,6 +88,9 @@ class MovieDataEnricher
                                 movie_hash["poster_path"] ||
                                 movie_hash[:poster_url] ||
                                 movie_hash["poster_url"]
+
+    rating_value = movie_hash[:rating] || movie_hash["rating"]
+    movie_hash[:rating] = rating_value&.to_f
   end
 
   def self.enrich_collection(movies_data, user)

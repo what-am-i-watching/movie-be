@@ -27,12 +27,12 @@ RSpec.describe 'UserMovies::Create', type: :request do
             example: 'to_watch'
           },
           rating: {
-            type: :integer,
+            type: :number,
             nullable: true,
             minimum: 0,
             maximum: 5,
-            description: 'User rating from 0 to 5 (optional). Must be 0-5 when provided.',
-            example: 5
+            description: 'User rating from 0 to 5 in 0.5 increments (optional).',
+            example: 4.5
           },
           notes: {
             type: :string,
@@ -101,10 +101,10 @@ RSpec.describe 'UserMovies::Create', type: :request do
                   example: 'to_watch'
                 },
                 rating: {
-                  type: :integer,
+                  type: :number,
                   nullable: true,
                   description: 'User rating',
-                  example: 5
+                  example: 4.5
                 },
                 notes: {
                   type: :string,

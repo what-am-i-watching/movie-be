@@ -12,11 +12,17 @@ RSpec.describe UserMovie, type: :model do
       expect(user_movie).to be_valid
     end
 
-    it 'allows valid ratings 0 through 5' do
-      [ 0, 1, 2, 3, 4, 5 ].each do |rating|
+    it 'allows valid ratings from 0.0 through 5.0 in 0.5 steps' do
+      [ 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0 ].each do |rating|
         user_movie = UserMovie.new(user: user, movie: movie, status: :to_watch, rating: rating)
         expect(user_movie).to be_valid, "expected rating #{rating} to be valid"
       end
+    end
+
+    it 'rejects ratings that are not in 0.5 increments' do
+      user_movie = UserMovie.new(user: user, movie: movie, status: :to_watch, rating: 4.7)
+      expect(user_movie).not_to be_valid
+      expect(user_movie.errors[:rating]).to include('must be in 0.5 increments')
     end
 
     it 'rejects rating less than 0' do

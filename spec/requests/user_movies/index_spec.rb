@@ -69,10 +69,10 @@ RSpec.describe 'UserMovies::Index', type: :request do
                     example: 'to_watch'
                   },
                   rating: {
-                    type: :integer,
+                    type: :number,
                     nullable: true,
                     description: 'User rating',
-                    example: 5
+                    example: 4.5
                   },
                   notes: {
                     type: :string,

@@ -44,7 +44,8 @@ class MovieSerializer
   end
 
   attribute :rating do |movie|
-    movie[:rating] || movie["rating"]
+    rating_value = movie[:rating] || movie["rating"]
+    rating_value&.to_f
   end
 
   attribute :notes do |movie|

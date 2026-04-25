@@ -7,7 +7,7 @@ RSpec.describe 'Movies::Search', type: :request do
     get 'Search movies and TV shows' do
       tags 'Movies'
       produces 'application/json'
-      description 'Search for movies and TV shows by query string. Returns combined results sorted by popularity.'
+      description 'Search for movies and TV shows by query string. Returns combined results with titles released (or first aired) in the last 6 months first, then by popularity.'
       security [ bearerAuth: [] ]
 
       parameter name: :query, in: :query, type: :string, required: true,
@@ -75,10 +75,10 @@ RSpec.describe 'Movies::Search', type: :request do
                     example: 'to_watch'
                   },
                   rating: {
-                    type: :integer,
+                    type: :number,
                     nullable: true,
                     description: 'User rating (only present if in_list is true)',
-                    example: 5
+                    example: 4.5
                   },
                   notes: {
                     type: :string,

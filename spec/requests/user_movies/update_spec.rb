@@ -26,12 +26,12 @@ RSpec.describe 'UserMovies::Update', type: :request do
             example: 'watching'
           },
           rating: {
-            type: :integer,
+            type: :number,
             nullable: true,
             minimum: 0,
             maximum: 5,
-            description: 'User rating from 0 to 5 (optional). Must be 0-5 when provided.',
-            example: 4
+            description: 'User rating from 0 to 5 in 0.5 increments (optional).',
+            example: 4.5
           },
           notes: {
             type: :string,
@@ -99,10 +99,10 @@ RSpec.describe 'UserMovies::Update', type: :request do
                   example: 'watching'
                 },
                 rating: {
-                  type: :integer,
+                  type: :number,
                   nullable: true,
                   description: 'User rating',
-                  example: 4
+                  example: 4.5
                 },
                 notes: {
                   type: :string,
@@ -226,6 +226,7 @@ RSpec.describe 'UserMovies::Update', type: :request do
           expect(data['user_movie']['in_list']).to eq(true)
           expect(data['user_movie']['status']).to eq('watched')
           expect(data['user_movie']['rating']).to eq(4)
+          expect(data['user_movie']['rating']).to be_a(Numeric)
           expect(data['user_movie']['notes']).to eq('Best show ever!!')
         end
       end

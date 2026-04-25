@@ -114,10 +114,10 @@ RSpec.configure do |config|
                 example: 'Released'
               },
               rating: {
-                type: :integer,
+                type: :number,
                 nullable: true,
                 description: 'User rating (only present if in_list is true)',
-                example: 5
+                example: 4.5
               },
               notes: {
                 type: :string,
