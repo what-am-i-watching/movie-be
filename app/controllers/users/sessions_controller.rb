@@ -26,7 +26,8 @@ class Users::SessionsController < Devise::SessionsController
       status: :ok
   end
 
-  def respond_to_on_destroy
+  # Devise may pass a resource/scope argument here depending on version.
+  def respond_to_on_destroy(*)
     token = request.headers["Authorization"]&.split(" ")&.last
 
     if token.blank?
